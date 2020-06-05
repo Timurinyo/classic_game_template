@@ -129,7 +129,9 @@ void BasicPlayer::Execute(CommandID command)
 
 void BasicPlayer::Spawn(GameGrid& gameGrid)
 {
-    m_CoordsCurrent = gameGrid.GetStartTileCoords();
+    glm::vec2 tempCoords = gameGrid.GetStartTileCoords();
+
+    m_CoordsCurrent = glm::vec2(tempCoords.x, tempCoords.y * -1.f);
 
     m_IsPlayerSpawned = true;
 }
