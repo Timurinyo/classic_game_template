@@ -22,7 +22,6 @@ int GameMain()
     camera.windowWidth = window->GetWidth();
     camera.windowHeight = window->GetHeight();
     camera.pixelsPerUnit = 87.0f;
-    camera.position = glm::vec2(10.0f, -10.0f);
 
     auto tiledMap = cgt::Tilemap::LoadFrom(
         "assets/examples/maps/sample_iso.tmx",

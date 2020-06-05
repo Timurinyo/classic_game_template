@@ -15,7 +15,7 @@ glm::mat4 CameraSimpleOrtho::GetViewProjection() const
 
     glm::vec2 centerOffset = unitsPerPixel * glm::vec2(
         (float)(windowWidth / 2),
-        windowHeight * -1.0f);
+        (float)windowHeight);
     centerOffset = isometricRotation * glm::vec4(centerOffset, 0.0f, 0.0f);
 
     glm::vec2 alignedPosition = position - centerOffset;
