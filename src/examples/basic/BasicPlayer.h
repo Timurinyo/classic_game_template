@@ -47,7 +47,7 @@ public:
 
     void Update(float dt);
 
-    void Execute(CommandID command);
+    void Execute(CommandID command, GameGrid& grid);
 
     PlayerStateID GetPlayerState() const { return m_PlayerState; }
 

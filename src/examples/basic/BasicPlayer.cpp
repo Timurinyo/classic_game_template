@@ -29,7 +29,6 @@ void BasicPlayer::Update(float dt)
     {
         m_RotateTimer += dt;
 
-        // lerp and round player direction. m_DirectionCurrent = ...
         float newPlayerDirection; 
 
         if (((m_DirectionNext - m_DirectionPrev) > DirectionID::Count/2))
@@ -83,7 +82,7 @@ void BasicPlayer::Update(float dt)
 
 }
 
-void BasicPlayer::Execute(CommandID command)
+void BasicPlayer::Execute(CommandID command, GameGrid& grid)
 {   
     m_MoveTimer = 0;
     m_RotateTimer = 0;
@@ -95,7 +94,9 @@ void BasicPlayer::Execute(CommandID command)
         m_PlayerState = PlayerStateID::Moving;
             
         m_CoordsPrev = m_CoordsCurrent;
-        m_CoordsNext = m_CoordsCurrent + m_DirectionsMap[m_DirectionCurrent]; // TODO: multiply by step size
+        m_CoordsNext = m_CoordsCurrent + m_DirectionsMap[m_DirectionCurrent];
+
+        //grid.At(m_CoordsNext);
         break;
     }
     case CommandID::TurnLeft:
