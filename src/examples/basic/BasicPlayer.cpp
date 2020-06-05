@@ -35,7 +35,7 @@ void BasicPlayer::Update(float dt)
                 newPlayerDirection += DirectionID::Count;
             }
         }
-        else if ((m_DirectionNext - m_DirectionPrev) < 0)
+        else if ((m_DirectionNext - m_DirectionPrev) < -DirectionID::Count/2)
         {
             int directionPreviousTemp = m_DirectionPrev - DirectionID::Count;
             newPlayerDirection = LerpFloat(directionPreviousTemp, m_DirectionNext, m_RotateTimer / m_TimePerRotation);
