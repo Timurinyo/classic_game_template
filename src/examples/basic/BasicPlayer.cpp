@@ -8,7 +8,7 @@ void BasicPlayer::Render(cgt::render::RenderQueue& queue)
 
     cgt::render::SpriteDrawRequest sprite;
     sprite.position = m_CoordsCurrent;
-    sprite.scale = glm::vec2(3.f, 3.f);
+    sprite.rotation = 45.f;
     sprite.texture = std::move(texture);
     queue.sprites.emplace_back(std::move(sprite));
 }
