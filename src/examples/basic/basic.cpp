@@ -100,14 +100,13 @@ int GameMain()
         renderQueue.Reset();
         renderQueue.clearColor = glm::vec4(1.0f, 0.3f, 1.0f, 1.0f);
 
-<<<<<<< HEAD
-        tiledMap->Render(renderQueue);
+        tiledMapRenderer.Render(renderQueue);
+
         player->Execute(CommandID::MoveForward);
         player->Update(dt);
         player->Render(renderQueue);
-=======
-        tiledMapRenderer.Render(renderQueue);
->>>>>>> 5439f36c17d34c7911605df3bcd39aab8a2b0423
+
+
 
         renderStats = render->Submit(renderQueue, camera);
     }
