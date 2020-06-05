@@ -1,5 +1,7 @@
 #include <examples/basic/pch.h>
 
+#include <examples/basic/game_grid.h>
+
 #include "CommandQueue.h"
 #include "Interface/CommandsUI.h"
 
@@ -20,10 +22,9 @@ int GameMain()
     camera.windowHeight = window->GetHeight();
     camera.pixelsPerUnit = 87.0f;
 
-    auto tiledMap = cgt::Tilemap::LoadFrom(
-        "assets/examples/maps/sample_iso.tmx",
-        *render,
-        "assets/examples/maps");
+    auto tiledMap = cgt::LoadTiledMap("assets/examples/maps/sample_iso.tmx");
+    cgt::Tilemap tiledMapRenderer(tiledMap, *render, "assets/examples/maps");
+    GameGrid gameGrid(tiledMap);
 
     BasicPlayer* player = new BasicPlayer("assets/examples/textures/player/char01", *render);
 
@@ -99,10 +100,14 @@ int GameMain()
         renderQueue.Reset();
         renderQueue.clearColor = glm::vec4(1.0f, 0.3f, 1.0f, 1.0f);
 
+<<<<<<< HEAD
         tiledMap->Render(renderQueue);
         player->Execute(CommandID::MoveForward);
         player->Update(dt);
         player->Render(renderQueue);
+=======
+        tiledMapRenderer.Render(renderQueue);
+>>>>>>> 5439f36c17d34c7911605df3bcd39aab8a2b0423
 
         renderStats = render->Submit(renderQueue, camera);
     }
