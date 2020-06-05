@@ -7,17 +7,27 @@ namespace cgt::render
 
 glm::mat4 CameraSimpleOrtho::GetViewProjection() const
 {
+    const float unitsPerPixel = 1.0f / pixelsPerUnit;
+
+    const glm::vec2 centerOffset = unitsPerPixel * glm::vec2(
+        (float)(windowWidth / 2),
+        (float)(windowHeight / 2));
+
+    glm::vec2 alignedPosition = position - centerOffset;
+
+    alignedPosition.x = alignedPosition.x - std::fmodf(alignedPosition.x, unitsPerPixel);
+    alignedPosition.y = alignedPosition.y - std::fmodf(alignedPosition.y, unitsPerPixel);
+
     const glm::mat4 view = glm::lookAt(
-        glm::vec3(position, -1.0f),
-        glm::vec3(position, 0.0f),
+        glm::vec3(alignedPosition, -1.0f),
+        glm::vec3(alignedPosition, 0.0f),
         glm::vec3(0.0f, 1.0f, 0.0f));
 
-    const float viewScale = 1.0f / pixelsPerUnit;
     const glm::mat4 projection = glm::ortho(
-        windowWidth * -0.5f * viewScale,
-        windowWidth * 0.5f * viewScale,
-        windowHeight * -0.5f * viewScale,
-        windowHeight * 0.5f * viewScale,
+        0.0f,
+        windowWidth * unitsPerPixel,
+        0.0f,
+        windowHeight * unitsPerPixel,
         0.0f,
         1.0f);
 
