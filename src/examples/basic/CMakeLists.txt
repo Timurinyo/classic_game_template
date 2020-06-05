@@ -1,10 +1,14 @@
 add_executable(example_basic
     basic.cpp
+    BasicPlayer.h
+    BasicPlayer.cpp
+    utils.h
     Interface/CommandsUI.h
     Interface/CommandsUI.cpp
     CommandQueue.h
     CommandQueue.cpp
     pch.h
+    game_grid.cpp game_grid.h
     )
 
 target_link_libraries(example_basic

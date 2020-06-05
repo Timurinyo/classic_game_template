@@ -1,7 +1,11 @@
 #include <examples/basic/pch.h>
 
+#include <examples/basic/game_grid.h>
+
 #include "CommandQueue.h"
 #include "Interface/CommandsUI.h"
+
+#include <examples/basic/BasicPlayer.h>
 
 int GameMain()
 {
@@ -18,10 +22,11 @@ int GameMain()
     camera.windowHeight = window->GetHeight();
     camera.pixelsPerUnit = 87.0f;
 
-    auto tiledMap = cgt::Tilemap::LoadFrom(
-        "assets/examples/maps/sample_iso.tmx",
-        *render,
-        "assets/examples/maps");
+    auto tiledMap = cgt::LoadTiledMap("assets/examples/maps/sample_iso.tmx");
+    cgt::Tilemap tiledMapRenderer(tiledMap, *render, "assets/examples/maps");
+    GameGrid gameGrid(tiledMap);
+
+    BasicPlayer* player = new BasicPlayer("assets/examples/textures/player/char01", *render);
 
     CommandQueue commandQueue;
     CommandsUI commandsInterface(render, &commandQueue);
@@ -86,6 +91,7 @@ int GameMain()
             ImGui::Text("Frame time: %.2fms", dt * 1000.0f);
             ImGui::Text("Sprites: %d", renderStats.spriteCount);
             ImGui::Text("Drawcalls: %d", renderStats.drawcallCount);
+            //ImGui::Text("Drawcalls: %d", renderStats.drawcallCount);
             ImGui::End();
         }
 
@@ -94,7 +100,13 @@ int GameMain()
         renderQueue.Reset();
         renderQueue.clearColor = glm::vec4(1.0f, 0.3f, 1.0f, 1.0f);
 
-        tiledMap->Render(renderQueue);
+        tiledMapRenderer.Render(renderQueue);
+
+        player->Execute(CommandID::MoveForward);
+        player->Update(dt);
+        player->Render(renderQueue);
+
+
 
         renderStats = render->Submit(renderQueue, camera);
     }

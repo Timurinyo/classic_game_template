@@ -25,7 +25,7 @@ struct Command
 class CommandQueue
 {
 public:
-    CommandQueue(int size = 5);
+    CommandQueue(int size = 20);
     const std::vector<Command>& GetAll() const { return m_Commands; }
     const Command& GetCurrent() const;
     const Command& Get(int indx) const;
