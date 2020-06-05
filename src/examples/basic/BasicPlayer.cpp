@@ -16,6 +16,7 @@ void BasicPlayer::Render(cgt::render::RenderQueue& queue)
     sprite.position = m_CoordsCurrent;
     sprite.rotation = 45.f;
     sprite.texture = std::move(texture);
+    sprite.scale = { 1.f, 1.536 };
     queue.sprites.emplace_back(std::move(sprite));
 }
 

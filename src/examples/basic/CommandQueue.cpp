@@ -37,4 +37,5 @@ void CommandQueue::Set(int indx, const Command& command)
 void CommandQueue::Reset()
 {
     m_Commands = std::vector<Command>(m_Size, m_NullCommand);
+    m_CommandIndx = 0;
 }
