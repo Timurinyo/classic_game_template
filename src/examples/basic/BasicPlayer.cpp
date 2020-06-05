@@ -96,7 +96,6 @@ void BasicPlayer::Execute(CommandID command, GameGrid& grid)
         m_CoordsPrev = m_CoordsCurrent;
         m_CoordsNext = m_CoordsCurrent + m_DirectionsMap[m_DirectionCurrent];
 
-        //grid.At(m_CoordsNext);
         break;
     }
     case CommandID::TurnLeft:
