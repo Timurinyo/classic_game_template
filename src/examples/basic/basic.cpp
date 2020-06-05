@@ -1,5 +1,7 @@
 #include <examples/basic/pch.h>
 
+#include <examples/basic/game_grid.h>
+
 int GameMain()
 {
     auto windowCfg = cgt::WindowConfig();
@@ -15,10 +17,9 @@ int GameMain()
     camera.windowHeight = window->GetHeight();
     camera.pixelsPerUnit = 87.0f;
 
-    auto tiledMap = cgt::Tilemap::LoadFrom(
-        "assets/examples/maps/sample_iso.tmx",
-        *render,
-        "assets/examples/maps");
+    auto tiledMap = cgt::LoadTiledMap("assets/examples/maps/sample_iso.tmx");
+    cgt::Tilemap tiledMapRenderer(tiledMap, *render, "assets/examples/maps");
+    GameGrid gameGrid(tiledMap);
 
     cgt::Clock frameClock;
     SDL_Event event {};
@@ -86,10 +87,11 @@ int GameMain()
         renderQueue.Reset();
         renderQueue.clearColor = glm::vec4(1.0f, 0.3f, 1.0f, 1.0f);
 
-        tiledMap->Render(renderQueue);
+        tiledMapRenderer.Render(renderQueue);
 
         renderStats = render->Submit(renderQueue, camera);
     }
 
+    tmx_map_free(tiledMap);
     return 0;
 }
