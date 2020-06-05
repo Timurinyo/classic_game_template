@@ -1,8 +1,14 @@
 #include <examples/basic/BasicPlayer.h>
 #include <examples/basic/utils.h>
 
+#include <examples/basic/game_grid.h>
+
 void BasicPlayer::Render(cgt::render::RenderQueue& queue)
 {
+    if (!m_IsPlayerSpawned)
+    {
+        return;
+    }
     cgt::render::TextureHandle texture;
     texture = m_Textures[m_DirectionCurrent];
 
@@ -121,6 +127,13 @@ void BasicPlayer::Execute(CommandID command)
     }
 }
 
+void BasicPlayer::Spawn(GameGrid& gameGrid)
+{
+    m_CoordsCurrent = gameGrid.GetStartTileCoords();
+
+    m_IsPlayerSpawned = true;
+}
+
 void BasicPlayer::InitTextures(const char* path, cgt::render::IRenderContext& render)
 {
     for (int i = 0; i < DirectionID::Count; i++)
@@ -133,6 +146,7 @@ void BasicPlayer::InitTextures(const char* path, cgt::render::IRenderContext& re
 void BasicPlayer::InitDirectionsMap()
 {
     m_DirectionsMap = {
+        glm::vec2(1.f,-1.f),
         glm::vec2(0.f,-1.f),
         glm::vec2(-1.f,-1.f),
         glm::vec2(-1.f,0.f),
@@ -140,6 +154,5 @@ void BasicPlayer::InitDirectionsMap()
         glm::vec2(0.f,1.f),
         glm::vec2(1.f,1.f),
         glm::vec2(1.f,0.f),
-        glm::vec2(1.f,-1.f)
     };
 }

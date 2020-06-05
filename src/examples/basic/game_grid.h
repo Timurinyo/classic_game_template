@@ -25,9 +25,14 @@ public:
 
     u32 Width() { return m_Width; }
     u32 Height() { return m_Height; }
+
+    glm::vec2 GetStartTileCoords() const { return m_StartTileCoords; }
+
 private:
     u32 m_Width;
     u32 m_Height;
 
     std::vector<GameTile> m_Grid;
+
+    glm::vec2 m_StartTileCoords;
 };

@@ -28,6 +28,8 @@ int GameMain()
 
     BasicPlayer player("assets/examples/textures/player/char01", *render);
 
+    player.Spawn(gameGrid);
+
     CommandQueue commandQueue;
     CommandsUI commandsInterface(render, &commandQueue);
 

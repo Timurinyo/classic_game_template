@@ -8,6 +8,8 @@
 
 #include "CommandQueue.h"
 
+class GameGrid;
+
 enum DirectionID
 {
     S = 0,
@@ -47,10 +49,13 @@ public:
 
     void Execute(CommandID command);
 
-    PlayerStateID GetPlayerState() const
-    {
-        return m_PlayerState;
-    }
+    PlayerStateID GetPlayerState() const { return m_PlayerState; }
+
+    glm::vec2 GetPosition() const { return m_CoordsCurrent; };
+
+    void SetPosition(glm::vec2 position) { m_CoordsCurrent = position; };
+
+    void Spawn(GameGrid& gameGrid);
 
 private:
     std::unordered_map<DirectionID, cgt::render::TextureHandle> m_Textures;
@@ -74,7 +79,8 @@ private:
     const float m_TimePerRotation = 1.f;
 
     PlayerStateID m_PlayerState = PlayerStateID::Idle;
-    //CommandID
+
+    bool m_IsPlayerSpawned = false;
 
     void InitTextures(const char* path, cgt::render::IRenderContext& render);
     void InitDirectionsMap();

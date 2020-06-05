@@ -46,6 +46,11 @@ GameGrid::GameGrid(tmx_map* map)
                 if (tile)
                 {
                     this->At(x, y) = GameTile::FromTMXTile(*tile);
+
+                    if (this->At(x, y).type == GameTile::Type::Start)
+                    {
+                        m_StartTileCoords = glm::vec2(x, y);
+                    }
                 }
             }
         }
