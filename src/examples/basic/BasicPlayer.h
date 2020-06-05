@@ -46,6 +46,11 @@ public:
 
     void Execute(CommandID command);
 
+    PlayerStateID GetPlayerState() const
+    {
+        return m_PlayerState;
+    }
+
 private:
     std::unordered_map<DirectionID, cgt::render::TextureHandle> m_Textures;
 

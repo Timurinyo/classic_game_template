@@ -106,8 +106,6 @@ int GameMain()
         player->Update(dt);
         player->Render(renderQueue);
 
-
-
         renderStats = render->Submit(renderQueue, camera);
     }
 
