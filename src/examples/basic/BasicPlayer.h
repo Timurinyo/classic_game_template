@@ -7,6 +7,7 @@
 #include <render_core/render_queue.h>
 
 #include "CommandQueue.h"
+#include "game_grid.h"
 
 class GameGrid;
 
@@ -28,6 +29,7 @@ enum class PlayerStateID
     Idle = 0,
     Rotating,
     Moving,
+    Dying,
 
     Count
 };
@@ -84,4 +86,8 @@ private:
 
     void InitTextures(const char* path, cgt::render::IRenderContext& render);
     void InitDirectionsMap();
+
+    GameTile::Type m_NextTileType = GameTile::Type::Undefined;
 };
+
+const char* PlayerStateToString(PlayerStateID state);

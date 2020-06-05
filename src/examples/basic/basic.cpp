@@ -115,6 +115,31 @@ int GameMain()
         player.Update(dt);
         player.Render(renderQueue);
 
+        {
+            const glm::vec2 playerPosition = player.GetPosition();
+            const GameTile currentTile = gameGrid.At(playerPosition.x, -playerPosition.y);
+
+            ImGui::SetNextWindowSize({ 300, 100 }, ImGuiCond_FirstUseEver);
+            ImGui::Begin("Player Stats");
+            
+            ImGui::Text("x: %f y: %f", playerPosition.x, playerPosition.y);
+            ImGui::Text("Player State: %s", PlayerStateToString(player.GetPlayerState()));
+            ImGui::Text("Current tile: %d", static_cast<int>(currentTile.type));
+            
+            if (player.GetPlayerState() == PlayerStateID::Idle && currentTile.type == GameTile::Type::Goal)
+            {
+                ImGui::Text("You Won!");
+            }
+
+            if (player.GetPlayerState() == PlayerStateID::Dying && ImGui::Button("Respawn"))
+            {
+                commandQueue.Reset();
+                player.Spawn(gameGrid);
+            }
+
+            ImGui::End();
+        }
+
         renderStats = render->Submit(renderQueue, camera);
     }
 

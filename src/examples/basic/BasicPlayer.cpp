@@ -15,6 +15,11 @@ void BasicPlayer::Render(cgt::render::RenderQueue& queue)
     cgt::render::SpriteDrawRequest sprite;
     sprite.position = m_CoordsCurrent;
     sprite.rotation = 45.f;
+    if (m_PlayerState == PlayerStateID::Dying)
+    {
+        sprite.rotation = 90.f;
+        sprite.colorTint = glm::vec4(1, 0.3, 0.3, 1);
+    }
     sprite.texture = std::move(texture);
     sprite.scale = { 1.f, 1.536 };
     queue.sprites.emplace_back(std::move(sprite));
@@ -74,6 +79,10 @@ void BasicPlayer::Update(float dt)
         {
             m_MoveTimer = 0;
             m_PlayerState = PlayerStateID::Idle;
+            if (m_NextTileType == GameTile::Type::Water)
+            {
+                m_PlayerState = PlayerStateID::Dying;
+            }
         }
         break;
     }
@@ -97,7 +106,8 @@ void BasicPlayer::Execute(CommandID command, GameGrid& grid)
         m_CoordsPrev = m_CoordsCurrent;
         m_CoordsNext = m_CoordsCurrent + m_DirectionsMap[m_DirectionCurrent];
 
-        //TODO: react on grid.At(m_CoordsNext). Could be Drawning or Confusion
+        //TODO: react on grid.At(m_CoordsNext). Could be Drowning or Confusion
+        m_NextTileType = grid.At(m_CoordsNext.x, -m_CoordsNext.y).type;
 
         break;
     }
@@ -137,6 +147,8 @@ void BasicPlayer::Spawn(GameGrid& gameGrid)
     m_CoordsCurrent = glm::vec2(tempCoords.x, tempCoords.y * -1.f);
 
     m_IsPlayerSpawned = true;
+
+    m_PlayerState = PlayerStateID::Idle;
 }
 
 void BasicPlayer::InitTextures(const char* path, cgt::render::IRenderContext& render)
@@ -160,4 +172,19 @@ void BasicPlayer::InitDirectionsMap()
         glm::vec2(1.f,1.f),
         glm::vec2(1.f,0.f),
     };
+}
+
+
+const char* PlayerStateToString(PlayerStateID state)
+{
+#define StateToStr(state) case state: return #state
+    switch (state)
+    {
+        StateToStr(PlayerStateID::Idle);
+        StateToStr(PlayerStateID::Moving);
+        StateToStr(PlayerStateID::Rotating);
+        StateToStr(PlayerStateID::Dying);
+        default: return "Undefined";
+    }
+#undef StateToStr
 }
