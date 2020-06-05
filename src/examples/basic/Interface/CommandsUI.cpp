@@ -76,10 +76,7 @@ void CommandsUI::DrawCommandSelectButtons()
         const Command& command = m_AvailableCommands[i];
 
         ImGui::PushID(0xf0000 | i);
-        if (DrawCommandImageButton(command.ID))
-        {
-            m_CommandQueue->Set(0, command);
-        }
+        DrawCommandImageButton(command.ID);
 
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
         {
