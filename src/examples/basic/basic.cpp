@@ -25,12 +25,10 @@ int GameMain()
         *render,
         "assets/examples/maps");
 
-<<<<<<< HEAD
     BasicPlayer* player = new BasicPlayer("assets/examples/textures/player/char01", *render);
-=======
+
     CommandQueue commandQueue;
     CommandsUI commandsInterface(render, &commandQueue);
->>>>>>> 74258d763d2c782ed1f26e4c9ea6039ce1b0ed5e
 
     cgt::Clock frameClock;
     SDL_Event event {};

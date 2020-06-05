@@ -6,13 +6,7 @@
 #include <render_core/i_render_context.h>
 #include <render_core/render_queue.h>
 
-enum class CommandID
-{
-    None,
-    MoveForward,
-    TurnLeft,
-    TurnRight,
-};
+#include "CommandQueue.h"
 
 enum DirectionID
 {
