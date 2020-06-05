@@ -24,6 +24,32 @@ void BasicPlayer::Update(float dt)
         m_RotateTimer += dt;
 
         // lerp and round player direction. m_DirectionCurrent = ...
+        float newPlayerDirection; 
+
+        if (((m_DirectionNext - m_DirectionPrev) > DirectionID::Count/2))
+        {
+            int directionNextTemp = m_DirectionNext - DirectionID::Count;
+            newPlayerDirection = LerpFloat(m_DirectionPrev, directionNextTemp, m_RotateTimer / m_TimePerRotation);
+            if (newPlayerDirection < 0)
+            {
+                newPlayerDirection += DirectionID::Count;
+            }
+        }
+        else if ((m_DirectionNext - m_DirectionPrev) < 0)
+        {
+            int directionPreviousTemp = m_DirectionPrev - DirectionID::Count;
+            newPlayerDirection = LerpFloat(directionPreviousTemp, m_DirectionNext, m_RotateTimer / m_TimePerRotation);
+            if(newPlayerDirection < 0)
+            {
+                newPlayerDirection += DirectionID::Count;
+            }
+        }
+        else
+        {
+            newPlayerDirection = LerpFloat(m_DirectionPrev, m_DirectionNext, m_RotateTimer / m_TimePerRotation);
+        }
+
+        m_DirectionCurrent = static_cast<DirectionID>(std::floor(newPlayerDirection));
 
         if (m_RotateTimer > m_TimePerRotation)
         {
@@ -53,46 +79,45 @@ void BasicPlayer::Update(float dt)
 
 void BasicPlayer::Execute(CommandID command)
 {   
-    if (m_PlayerState == PlayerStateID::Idle)
+    m_MoveTimer = 0;
+    m_RotateTimer = 0;
+
+    switch(command)
     {
-        m_MoveTimer = 0;
-        m_RotateTimer = 0;
-
-        switch(command)
-        {
-        case CommandID::MoveForward:
-        {
-            m_PlayerState = PlayerStateID::Moving;
+    case CommandID::MoveForward:
+    {
+        m_PlayerState = PlayerStateID::Moving;
             
-            m_CoordsPrev = m_CoordsCurrent;
-            m_CoordsNext = m_CoordsCurrent + m_DirectionsMap[m_DirectionCurrent]; // TODO: multiply by step size
-            break;
-        }
-        case CommandID::TurnLeft:
-        {
-            m_PlayerState = PlayerStateID::Rotating;
+        m_CoordsPrev = m_CoordsCurrent;
+        m_CoordsNext = m_CoordsCurrent + m_DirectionsMap[m_DirectionCurrent]; // TODO: multiply by step size
+        break;
+    }
+    case CommandID::TurnLeft:
+    {
+        m_PlayerState = PlayerStateID::Rotating;
 
-            m_DirectionPrev = m_DirectionCurrent;
-            m_DirectionNext = static_cast<DirectionID>(m_DirectionCurrent - m_RotationStepSize);
-            if (m_DirectionNext < 0)
-            {
-                m_DirectionNext = static_cast<DirectionID>(DirectionID::Count + m_DirectionNext);
-            }
-            break;
-        }
-        case CommandID::TurnRight:
+        m_DirectionPrev = m_DirectionCurrent;
+        m_DirectionNext = static_cast<DirectionID>(m_DirectionCurrent - m_RotationStep);
+        if (m_DirectionNext < 0)
         {
-            m_DirectionPrev = m_DirectionCurrent;
-            m_DirectionNext = static_cast<DirectionID>(m_DirectionCurrent + m_RotationStepSize);
-            if (m_DirectionNext > DirectionID::Count - 1)
-            {
-                m_DirectionNext = static_cast<DirectionID>(-(DirectionID::Count - m_DirectionNext));
-            }
-            break;
+            m_DirectionNext = static_cast<DirectionID>(DirectionID::Count + m_DirectionNext);
         }
-        default:
-            break;
+        break;
+    }
+    case CommandID::TurnRight:
+    {
+        m_PlayerState = PlayerStateID::Rotating;
+
+        m_DirectionPrev = m_DirectionCurrent;
+        m_DirectionNext = static_cast<DirectionID>(m_DirectionCurrent + m_RotationStep);
+        if (m_DirectionNext > DirectionID::Count - 1)
+        {
+            m_DirectionNext = static_cast<DirectionID>(-(DirectionID::Count - m_DirectionNext));
         }
+        break;
+    }
+    default:
+        break;
     }
 }
 

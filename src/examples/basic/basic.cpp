@@ -26,10 +26,11 @@ int GameMain()
     cgt::Tilemap tiledMapRenderer(tiledMap, *render, "assets/examples/maps");
     GameGrid gameGrid(tiledMap);
 
-    BasicPlayer* player = new BasicPlayer("assets/examples/textures/player/char01", *render);
+    BasicPlayer player("assets/examples/textures/player/char01", *render);
 
     CommandQueue commandQueue;
     CommandsUI commandsInterface(render, &commandQueue);
+
 
     cgt::Clock frameClock;
     SDL_Event event {};
@@ -102,9 +103,17 @@ int GameMain()
 
         tiledMapRenderer.Render(renderQueue);
 
-        player->Execute(CommandID::MoveForward);
-        player->Update(dt);
-        player->Render(renderQueue);
+        const Command currentCommand = commandQueue.GetCurrent();
+        if (player.GetPlayerState() == PlayerStateID::Idle && currentCommand.ID != CommandID::None)
+        {
+            player.Execute(currentCommand.ID);
+            commandQueue.StepForward();
+        }
+
+        player.Update(dt);
+        player.Render(renderQueue);
+
+        auto tile = gameGrid.At(0, 0); // gameGrid get Start? 
 
         renderStats = render->Submit(renderQueue, camera);
     }

@@ -100,4 +100,6 @@ void Tilemap::RenderTile(render::RenderQueue& queue, const tmx_tile& tile, u32 x
     queue.sprites.emplace_back(std::move(sprite));
 }
 
+//getTile
+
 }

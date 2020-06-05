@@ -26,6 +26,7 @@ enum class PlayerStateID
     Idle = 0,
     Rotating,
     Moving,
+
     Count
 };
 
@@ -64,13 +65,13 @@ private:
 
     std::vector<glm::vec2> m_DirectionsMap;
 
-    int m_ForwardStepSize;
-    int m_RotationStepSize;
+    float m_ForwardStepSize = 1;
+    float m_RotationStep = 2;
 
     float m_MoveTimer, m_RotateTimer;
 
     const float m_TimePerMove = 1.f;
-    const float m_TimePerRotation = 1000.f;
+    const float m_TimePerRotation = 1.f;
 
     PlayerStateID m_PlayerState = PlayerStateID::Idle;
     //CommandID
