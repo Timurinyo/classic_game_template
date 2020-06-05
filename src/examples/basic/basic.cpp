@@ -2,6 +2,9 @@
 
 #include <examples/basic/game_grid.h>
 
+#include "CommandQueue.h"
+#include "Interface/CommandsUI.h"
+
 int GameMain()
 {
     auto windowCfg = cgt::WindowConfig();
@@ -20,6 +23,9 @@ int GameMain()
     auto tiledMap = cgt::LoadTiledMap("assets/examples/maps/sample_iso.tmx");
     cgt::Tilemap tiledMapRenderer(tiledMap, *render, "assets/examples/maps");
     GameGrid gameGrid(tiledMap);
+
+    CommandQueue commandQueue;
+    CommandsUI commandsInterface(render, &commandQueue);
 
     cgt::Clock frameClock;
     SDL_Event event {};
@@ -84,6 +90,8 @@ int GameMain()
             ImGui::End();
         }
 
+        commandsInterface.Tick(dt);
+
         renderQueue.Reset();
         renderQueue.clearColor = glm::vec4(1.0f, 0.3f, 1.0f, 1.0f);
 
@@ -92,6 +100,5 @@ int GameMain()
         renderStats = render->Submit(renderQueue, camera);
     }
 
-    tmx_map_free(tiledMap);
     return 0;
 }
