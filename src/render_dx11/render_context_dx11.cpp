@@ -8,6 +8,8 @@
 #include <DirectXTK/WICTextureLoader.h>
 #include <DirectXTK/DirectXHelpers.h>
 
+#include <imgui.h>
+
 namespace cgt::render
 {
 
@@ -263,7 +265,7 @@ RenderStats RenderContextDX11::Submit(RenderQueue& queue, const ICamera& camera)
     m_Context->VSSetConstantBuffers(0, 1, m_FrameConstants.GetAddressOf());
 
     m_Context->PSSetShader(m_PixelShader.Get(), nullptr, 0);
-    ID3D11SamplerState* sampler = m_CommonStates->LinearClamp();
+    ID3D11SamplerState* sampler = m_CommonStates->PointClamp();
     m_Context->PSSetSamplers(0, 1, &sampler);
 
     m_Context->OMSetBlendState(m_CommonStates->NonPremultiplied(), nullptr, 0xFFFFFFFF);
@@ -376,6 +378,33 @@ HRESULT RenderContextDX11::LoadTextureFromMemory(const u8* data, usize size, Tex
         outData.m_View.GetAddressOf());
 
     return hresult;
+}
+
+
+void RenderContextDX11::ImGuiImage(const TextureHandle& textrue, ImVec2 size, ImVec2 uv0, ImVec2 uv1)
+{
+    // copy-pasted from Submit
+    auto GetSpriteTexture = [this](const TextureHandle& tx)
+    {
+        return tx.get() != nullptr
+            ? tx->m_View.Get()
+            : m_MissingTexture.m_View.Get();
+    };
+
+    ImGui::Image(GetSpriteTexture(textrue), size, uv0, uv1);
+}
+
+bool RenderContextDX11::ImGuiImageButton(const TextureHandle& textrue, ImVec2 size, ImVec2 uv0, ImVec2 uv1)
+{
+    // copy-pasted from Submit
+    auto GetSpriteTexture = [this](const TextureHandle& tx)
+    {
+        return tx.get() != nullptr
+            ? tx->m_View.Get()
+            : m_MissingTexture.m_View.Get();
+    };
+
+    return ImGui::ImageButton(GetSpriteTexture(textrue), size, uv0, uv1);
 }
 
 }

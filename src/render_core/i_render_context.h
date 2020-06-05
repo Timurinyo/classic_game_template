@@ -24,6 +24,8 @@ public:
     virtual TextureHandle LoadTexture(const char* path) = 0;
 
     virtual void NewFrame() = 0;
+    virtual void ImGuiImage(const TextureHandle& textrue, ImVec2 size = { 64, 64 }, ImVec2 uv0 = { 0,0 }, ImVec2 uv1 = { 1, 1 }) = 0;
+    virtual bool ImGuiImageButton(const TextureHandle& textrue, ImVec2 size = { 64, 64 }, ImVec2 uv0 = { 0,0 }, ImVec2 uv1 = { 1, 1 }) = 0;
 
     virtual ~IRenderContext() = default;
 };
