@@ -108,14 +108,12 @@ int GameMain()
         const Command currentCommand = commandQueue.GetCurrent();
         if (player.GetPlayerState() == PlayerStateID::Idle && currentCommand.ID != CommandID::None)
         {
-            player.Execute(currentCommand.ID);
+            player.Execute(currentCommand.ID, gameGrid);
             commandQueue.StepForward();
         }
 
         player.Update(dt);
         player.Render(renderQueue);
-
-        auto tile = gameGrid.At(0, 0); // gameGrid get Start? 
 
         renderStats = render->Submit(renderQueue, camera);
     }
