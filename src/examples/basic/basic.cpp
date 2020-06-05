@@ -8,6 +8,8 @@
 #include <render_core/i_render_context.h>
 #include <render_core/camera_simple_ortho.h>
 
+#include <examples/basic/BasicPlayer.h>
+
 int GameMain()
 {
     auto windowCfg = cgt::WindowConfig();
@@ -27,6 +29,8 @@ int GameMain()
         "assets/examples/maps/sample_map.tmx",
         *render,
         "assets/examples/maps");
+
+    BasicPlayer* player = new BasicPlayer("assets/examples/textures/player/char01", *render);
 
     cgt::Clock frameClock;
     SDL_Event event {};
@@ -55,6 +59,7 @@ int GameMain()
             ImGui::Text("Frame time: %.2fms", dt * 1000.0f);
             ImGui::Text("Sprites: %d", renderStats.spriteCount);
             ImGui::Text("Drawcalls: %d", renderStats.drawcallCount);
+            //ImGui::Text("Drawcalls: %d", renderStats.drawcallCount);
             ImGui::End();
         }
 
@@ -62,6 +67,9 @@ int GameMain()
         renderQueue.clearColor = glm::vec4(1.0f, 0.3f, 1.0f, 1.0f);
 
         tiledMap->Render(renderQueue);
+        player->Execute(CommandID::MoveForward);
+        player->Update(dt);
+        player->Render(renderQueue);
 
         renderStats = render->Submit(renderQueue, camera);
     }
