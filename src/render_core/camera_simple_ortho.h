@@ -10,8 +10,8 @@ class CameraSimpleOrtho : public ICamera
 public:
     glm::mat4 GetViewProjection() const override;
 
-    float windowWidth;
-    float windowHeight;
+    u32 windowWidth;
+    u32 windowHeight;
 
     float pixelsPerUnit;
 
