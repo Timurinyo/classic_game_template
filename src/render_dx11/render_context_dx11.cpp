@@ -271,7 +271,7 @@ RenderStats RenderContextDX11::Submit(RenderQueue& queue, const ICamera& camera)
 
     std::sort(queue.sprites.begin(), queue.sprites.end(), [](const SpriteDrawRequest& a, const SpriteDrawRequest& b)
     {
-        return a.depth < b.depth || a.texture != b.texture;
+        return a.depth < b.depth;// || (a.depth == b.depth && a.texture != b.texture);
     });
 
     auto GetSpriteTexture = [this](const SpriteDrawRequest& sprite)
