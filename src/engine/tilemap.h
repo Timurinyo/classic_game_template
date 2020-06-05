@@ -1,3 +1,5 @@
+#pragma once
+
 #include <render_core/i_render_context.h>
 #include <render_core/render_queue.h>
 
