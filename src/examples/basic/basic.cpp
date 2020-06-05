@@ -8,6 +8,9 @@
 #include <render_core/i_render_context.h>
 #include <render_core/camera_simple_ortho.h>
 
+#include "CommandQueue.h"
+#include "Interface/CommandsUI.h"
+
 int GameMain()
 {
     auto windowCfg = cgt::WindowConfig();
@@ -27,6 +30,9 @@ int GameMain()
         "assets/examples/maps/sample_map.tmx",
         *render,
         "assets/examples/maps");
+
+    CommandQueue commandQueue;
+    CommandsUI commandsInterface(render, &commandQueue);
 
     cgt::Clock frameClock;
     SDL_Event event {};
@@ -57,6 +63,8 @@ int GameMain()
             ImGui::Text("Drawcalls: %d", renderStats.drawcallCount);
             ImGui::End();
         }
+
+        commandsInterface.Tick(dt);
 
         renderQueue.Reset();
         renderQueue.clearColor = glm::vec4(1.0f, 0.3f, 1.0f, 1.0f);
