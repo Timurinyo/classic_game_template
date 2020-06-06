@@ -5,6 +5,7 @@
 GameGrid::GameGrid(tmx_map* map, tmx_layer* layer, bool initialyDiscovered)
     : m_Width(map->width)
     , m_Height(map->height)
+    , m_InitialyDiscovered(initialyDiscovered)
 {
     m_Grid.resize(m_Width * m_Height);
 
@@ -41,6 +42,11 @@ GameTile& GameGrid::At(u32 x, u32 y)
 
 void GameGrid::UndiscoverAllTiles()
 {
+    if (m_InitialyDiscovered)
+    {
+        return;
+    }
+
     for(u32 y = 0; y < m_Height; ++y)
     {
         for(u32 x = 0; x < m_Width; ++x)
