@@ -35,6 +35,52 @@ void ImguiDebugRenderPlayerStats(BasicPlayer& player, GameGrid& gameGrid, Comman
     ImGui::End();
 }
 
+void HandleCameraControl(cgt::render::CameraSimpleOrtho &camera, const float dt)
+{
+    glm::vec2 cameraMoveInput(0.0f);
+    const u8* keyboard = SDL_GetKeyboardState(nullptr);
+    if(keyboard[SDL_SCANCODE_A])
+    {
+        cameraMoveInput.x -= 1.0f;
+    }
+    if(keyboard[SDL_SCANCODE_D])
+    {
+        cameraMoveInput.x += 1.0f;
+    }
+    if(keyboard[SDL_SCANCODE_S])
+    {
+        cameraMoveInput.y -= 1.0f;
+    }
+    if(keyboard[SDL_SCANCODE_W])
+    {
+        cameraMoveInput.y += 1.0f;
+    }
+
+    const float cameraMoveInputMagnitudeSqr = glm::dot(cameraMoveInput,cameraMoveInput);
+    if(cameraMoveInputMagnitudeSqr > 0.0f)
+    {
+        cameraMoveInput = cameraMoveInput / sqrt(cameraMoveInputMagnitudeSqr);
+        const glm::vec2 isometricCorrection(1.0f,2.0f);
+        cameraMoveInput = cameraMoveInput * isometricCorrection;
+
+        const glm::mat4 isometricRotation = glm::rotate(glm::mat4(1.0f),glm::radians(45.0f),glm::vec3(0.0f,0.0f,1.0f));
+        cameraMoveInput = isometricRotation * glm::vec4(cameraMoveInput,0.0f,0.0f);
+
+        const float cameraMoveSpeed = 5.0f;
+        camera.position += cameraMoveInput * cameraMoveSpeed * dt;
+    }
+}
+
+void ImGuiRenderStats(const float dt,cgt::render::RenderStats &renderStats)
+{
+    ImGui::SetNextWindowSize({200,80},ImGuiCond_FirstUseEver);
+    ImGui::Begin("Render Stats");
+    ImGui::Text("Frame time: %.2fms",dt * 1000.0f);
+    ImGui::Text("Sprites: %d",renderStats.spriteCount);
+    ImGui::Text("Drawcalls: %d",renderStats.drawcallCount);
+    ImGui::End();
+}
+
 int GameMain()
 {
     auto windowCfg = cgt::WindowConfig();
@@ -51,6 +97,14 @@ int GameMain()
     camera.pixelsPerUnit = 87.0f;
 
     auto tiledMap = cgt::LoadTiledMap("assets/examples/maps/level_02.tmx");
+    tmx_property* descriptionProperty = tmx_get_property(tiledMap->properties, "DESCRIPTION");
+    std::string currentLevelDescription;
+    if (descriptionProperty)
+    {
+        CGT_ASSERT(descriptionProperty->type == tmx_property_type::PT_STRING)
+        currentLevelDescription = descriptionProperty->value.string;
+    }
+
 
     std::unique_ptr<GameGrid> gameGrid;
     std::unique_ptr<GameGrid> pickupGrid;
@@ -113,49 +167,29 @@ int GameMain()
             }
         }
 
-        glm::vec2 cameraMoveInput(0.0f);
-        const u8* keyboard = SDL_GetKeyboardState(nullptr);
-        if (keyboard[SDL_SCANCODE_A])
-        {
-            cameraMoveInput.x -= 1.0f;
-        }
-        if (keyboard[SDL_SCANCODE_D])
-        {
-            cameraMoveInput.x += 1.0f;
-        }
-        if (keyboard[SDL_SCANCODE_S])
-        {
-            cameraMoveInput.y -= 1.0f;
-        }
-        if (keyboard[SDL_SCANCODE_W])
-        {
-            cameraMoveInput.y += 1.0f;
-        }
+        HandleCameraControl(camera, dt);
 
-        const float cameraMoveInputMagnitudeSqr = glm::dot(cameraMoveInput, cameraMoveInput);
-        if (cameraMoveInputMagnitudeSqr > 0.0f)
-        {
-            cameraMoveInput = cameraMoveInput / sqrt(cameraMoveInputMagnitudeSqr);
-            const glm::vec2 isometricCorrection(1.0f, 2.0f);
-            cameraMoveInput = cameraMoveInput * isometricCorrection;
-
-            const glm::mat4 isometricRotation = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-            cameraMoveInput = isometricRotation * glm::vec4(cameraMoveInput, 0.0f, 0.0f);
-
-            const float cameraMoveSpeed = 5.0f;
-            camera.position += cameraMoveInput * cameraMoveSpeed * dt;
-        }
-
-        {
-            ImGui::SetNextWindowSize({200, 80}, ImGuiCond_FirstUseEver);
-            ImGui::Begin("Render Stats");
-            ImGui::Text("Frame time: %.2fms", dt * 1000.0f);
-            ImGui::Text("Sprites: %d", renderStats.spriteCount);
-            ImGui::Text("Drawcalls: %d", renderStats.drawcallCount);
-            ImGui::End();
-        }
+        ImGuiRenderStats(dt, renderStats);
 
         commandsInterface.Tick(dt);
+
+        if (gameStateKeeper.GetState() == GameState::LevelStart)
+        {
+            const int imguiWindowWidth = 300;
+            const int imguiWindowHeight = 150;
+            ImGui::SetNextWindowSize({imguiWindowWidth, imguiWindowHeight});//, ImGuiCond_FirstUseEver);
+            ImGui::SetNextWindowPos({static_cast<float>(window->GetWidth() * 0.5 - imguiWindowWidth * 0.5),static_cast<float>(window->GetHeight() * 0.5 - imguiWindowHeight * 0.5)});
+            bool showWindow = true;
+            ImGui::Begin("Level description",&showWindow,ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+            ImGui::PushTextWrapPos(ImGui::GetFontSize() * 20.f);
+            ImGui::Text(currentLevelDescription.c_str());
+            ImGui::PopTextWrapPos();
+            if (ImGui::Button("Start!"))
+            {
+                gameStateKeeper.SetState(GameState::InGame);
+            }
+            ImGui::End();
+        }
 
         renderQueue.Reset();
         renderQueue.clearColor = glm::vec4(1.0f, 0.3f, 1.0f, 1.0f);
