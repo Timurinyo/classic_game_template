@@ -109,6 +109,14 @@ int GameMain()
     auto renderCfg = cgt::render::RenderConfig(window);
     auto render = cgt::render::IRenderContext::BuildWithConfig(renderCfg);
 
+    auto mixOpenResult = Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 2048);
+    CGT_ASSERT_MSG(mixOpenResult >= 0, "Failed to initialize SDL mixer!");
+
+    Mix_Music* music = cgt::LoadMusic("assets/examples/sounds/music.wav");
+    CGT_ASSERT_MSG(music, "Failed to open the music track!");
+
+    Mix_PlayMusic(music, 1);
+
     cgt::render::RenderQueue renderQueue;
     cgt::render::CameraSimpleOrtho camera;
     camera.windowWidth = window->GetWidth();
@@ -231,6 +239,8 @@ int GameMain()
 
         renderStats = render->Submit(renderQueue, camera);
     }
+
+    Mix_FreeMusic(music);
 
     return 0;
 }

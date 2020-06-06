@@ -77,4 +77,13 @@ tmx_map* LoadTiledMap(const char* path)
     return map;
 }
 
+Mix_Music* LoadMusic(const char* path)
+{
+    const std::string formattedPath = FormatPath(path);
+    Mix_Music* music = Mix_LoadMUS(formattedPath.c_str());
+    CGT_ASSERT_ALWAYS_MSG(music != nullptr, "Failed to load a music file at: {}\nSDL error: {}", formattedPath.c_str(), SDL_GetError());
+
+    return music;
+}
+
 }
