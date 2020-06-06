@@ -1,5 +1,6 @@
 cbuffer cbPerFrame : register(b0) {
 	float4x4 viewProjection;
+	float2 outputResolution;
 }
 
 Texture2D g_ColorTexture : register(t0);
@@ -22,11 +23,22 @@ struct PSInput {
 	float2 uv : TEXCOORD;
 };
 
+float mod(float x, float y)
+{
+	return x - y * floor(x / y);
+}
+
 PSInput VSMain(VSInput vin) {
 	PSInput vout;
 
+	float horizontalUnitsPerPixel = 2.0f / outputResolution.x;
+	float verticalUnitsPerPixel = 2.0f / outputResolution.y;
+
+	float2 pos = float2(vin.pos.x * (1.0f + horizontalUnitsPerPixel), vin.pos.y * (1.0f + verticalUnitsPerPixel));
+
 	float4x4 mvp = mul(viewProjection, vin.worldTransform);
-	vout.pos = mul(mvp, float4(vin.pos, 1.0f));
+	vout.pos = mul(mvp, float4(pos, vin.pos.z, 1.0f));
+
 
 	vout.uv = vin.uv * vin.uvTransform.zw + vin.uvTransform.xy;
 
