@@ -50,18 +50,33 @@ int GameMain()
     camera.windowHeight = window->GetHeight();
     camera.pixelsPerUnit = 87.0f;
 
-    auto tiledMap = cgt::LoadTiledMap("assets/examples/maps/sample_iso.tmx");
+    auto tiledMap = cgt::LoadTiledMap("assets/examples/maps/level_02.tmx");
+
     std::unique_ptr<GameGrid> gameGrid;
     std::unique_ptr<GameGrid> pickupGrid;
     for (tmx_layer* layer = tiledMap->ly_head; layer; layer = layer->next)
     {
         if (strcmp(layer->name, "BASE") == 0)
         {
-            gameGrid = std::make_unique<GameGrid>(tiledMap, layer, false);
+            tmx_property* discoveredProperty = tmx_get_property(layer->properties, "DISCOVERED");
+            bool isMapDiscovered = false; 
+            if (discoveredProperty)
+            {
+                isMapDiscovered = discoveredProperty->value.boolean;
+            }
+
+            gameGrid = std::make_unique<GameGrid>(tiledMap, layer, isMapDiscovered);
         }
         else if (strcmp(layer->name, "PICKUPS") == 0)
         {
-            pickupGrid = std::make_unique<GameGrid>(tiledMap, layer, false);
+            tmx_property* discoveredProperty = tmx_get_property(layer->properties,"DISCOVERED");
+            bool isMapDiscovered = false;
+            if (discoveredProperty)
+            {
+                isMapDiscovered = discoveredProperty->value.boolean;
+            }
+
+            pickupGrid = std::make_unique<GameGrid>(tiledMap, layer, isMapDiscovered);
         }
     }
     CGT_ASSERT_ALWAYS(gameGrid.get() && pickupGrid.get());
