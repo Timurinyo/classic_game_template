@@ -53,10 +53,16 @@ public:
         InitDirectionsMap();
 
         wilhelm = cgt::LoadWav("assets/examples/sounds/wilhelm.wav");
+        footsteps = cgt::LoadWav("assets/examples/sounds/footsteps.wav");
+        turning = cgt::LoadWav("assets/examples/sounds/turning.wav");
+        victory = cgt::LoadWav("assets/examples/sounds/victory.wav");
     };
 
     ~BasicPlayer()
     {
+        Mix_FreeChunk(victory);
+        Mix_FreeChunk(turning);
+        Mix_FreeChunk(footsteps);
         Mix_FreeChunk(wilhelm);
     }
 
@@ -133,6 +139,9 @@ private:
     GameTile::Type m_NextTileType = GameTile::Type::Undefined;
 
     Mix_Chunk* wilhelm;
+    Mix_Chunk* footsteps;
+    Mix_Chunk* turning;
+    Mix_Chunk* victory;
 
 };
 

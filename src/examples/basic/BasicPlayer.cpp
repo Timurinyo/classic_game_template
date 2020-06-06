@@ -124,6 +124,7 @@ void BasicPlayer::MoveForward(float dt)
         case GameTile::Type::Goal:
         {
             m_PlayerState = PlayerStateID::ReachedGoal;
+            Mix_PlayChannel(-1, victory, 0);
             break;
         }
         case GameTile::Type::Water:
@@ -207,6 +208,8 @@ void BasicPlayer::Execute(CommandID command, GameGrid& grid)
 
         m_NextTileType = grid.At(m_CoordsNext.x, -m_CoordsNext.y).type;
 
+        Mix_PlayChannel(-1, footsteps, 1);
+
         break;
     }
     case CommandID::TurnLeft:
@@ -219,6 +222,9 @@ void BasicPlayer::Execute(CommandID command, GameGrid& grid)
         {
             m_DirectionNext = static_cast<DirectionID>(DirectionID::Count + m_DirectionNext);
         }
+
+        Mix_PlayChannel(-1, turning, 2);
+
         break;
     }
     case CommandID::TurnRight:
@@ -231,6 +237,9 @@ void BasicPlayer::Execute(CommandID command, GameGrid& grid)
         {
             m_DirectionNext = static_cast<DirectionID>(-(DirectionID::Count - m_DirectionNext));
         }
+
+        Mix_PlayChannel(-1, turning, 2);
+
         break;
     }
     default:
