@@ -1,6 +1,6 @@
 enum class GameState
 {
-    Start,
+    LevelStart,
     InGame,
     FinishedLevel,
 };
@@ -13,5 +13,5 @@ public:
     GameState GetState() const { return m_CurrentState; }
 
 private:
-    GameState m_CurrentState = GameState::Start;
+    GameState m_CurrentState = GameState::LevelStart;
 };

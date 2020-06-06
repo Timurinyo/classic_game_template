@@ -6,6 +6,14 @@ void GameLevel::Load(cgt::render::IRenderContext& render, const char* path, cons
 {
     tmx_map* map = cgt::LoadTiledMap(path);
 
+    description.clear();
+    tmx_property* descriptionProperty = tmx_get_property(map->properties, "DESCRIPTION");
+    if (descriptionProperty)
+    {
+        CGT_ASSERT(descriptionProperty->type == tmx_property_type::PT_STRING)
+        description = descriptionProperty->value.string;
+    }
+
     for (tmx_layer* layer = map->ly_head; layer; layer = layer->next)
     {
         if (strcmp(layer->name, "BASE") == 0)
