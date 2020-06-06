@@ -7,6 +7,7 @@
 #include "Interface/CommandsUI.h"
 
 #include <examples/basic/BasicPlayer.h>
+#include <examples/basic/PoorsManStateMachine.h>
 
 void ImguiDebugRenderPlayerStats(BasicPlayer& player, GameGrid& gameGrid, CommandQueue& commandQueue)
 {
@@ -49,25 +50,32 @@ int GameMain()
     camera.windowHeight = window->GetHeight();
     camera.pixelsPerUnit = 87.0f;
 
+    auto tiledMap = cgt::LoadTiledMap("assets/examples/maps/sample_iso.tmx");
+    std::unique_ptr<GameGrid> gameGrid;
+    std::unique_ptr<GameGrid> pickupGrid;
+    for (tmx_layer* layer = tiledMap->ly_head; layer; layer = layer->next)
+    {
+        if (strcmp(layer->name, "BASE") == 0)
+        {
+            gameGrid = std::make_unique<GameGrid>(tiledMap, layer, false);
+        }
+        else if (strcmp(layer->name, "PICKUPS") == 0)
+        {
+            pickupGrid = std::make_unique<GameGrid>(tiledMap, layer, false);
+        }
+    }
+    CGT_ASSERT_ALWAYS(gameGrid.get() && pickupGrid.get());
 
+    auto tileset = Tileset::LoadFrom(*render, tiledMap, tiledMap->ts_head->tileset, "assets/examples/maps");
 
-    bool shouldGo = false;
     BasicPlayer player("assets/examples/textures/player", *render);
+    player.Spawn(*gameGrid);
+
+    GameStateKeeper gameStateKeeper;
 
     CommandQueue commandQueue;
     CommandsUI commandsInterface(render, &commandQueue);
 
-    std::tuple<const char*, bool> levelList[] =
-        {
-            { "assets/examples/maps/level_00.tmx", true },
-            { "assets/examples/maps/sample_iso.tmx", false },
-        };
-    usize currentLevelIdx = 0;
-
-    std::unique_ptr<GameGrid> gameGrid;
-    std::unique_ptr<GameGrid> pickupGrid;
-    std::unique_ptr<Tileset> tileset;
-    bool shouldReloadLevel = true;
 
     cgt::Clock frameClock;
     SDL_Event event {};
@@ -90,125 +98,105 @@ int GameMain()
             }
         }
 
-        renderQueue.Reset();
-        renderQueue.clearColor = glm::vec4(.3f, .3f, .4f, 1.0f);
+        glm::vec2 cameraMoveInput(0.0f);
+        const u8* keyboard = SDL_GetKeyboardState(nullptr);
+        if (keyboard[SDL_SCANCODE_A])
+        {
+            cameraMoveInput.x -= 1.0f;
+        }
+        if (keyboard[SDL_SCANCODE_D])
+        {
+            cameraMoveInput.x += 1.0f;
+        }
+        if (keyboard[SDL_SCANCODE_S])
+        {
+            cameraMoveInput.y -= 1.0f;
+        }
+        if (keyboard[SDL_SCANCODE_W])
+        {
+            cameraMoveInput.y += 1.0f;
+        }
+
+        const float cameraMoveInputMagnitudeSqr = glm::dot(cameraMoveInput, cameraMoveInput);
+        if (cameraMoveInputMagnitudeSqr > 0.0f)
+        {
+            cameraMoveInput = cameraMoveInput / sqrt(cameraMoveInputMagnitudeSqr);
+            const glm::vec2 isometricCorrection(1.0f, 2.0f);
+            cameraMoveInput = cameraMoveInput * isometricCorrection;
+
+            const glm::mat4 isometricRotation = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+            cameraMoveInput = isometricRotation * glm::vec4(cameraMoveInput, 0.0f, 0.0f);
+
+            const float cameraMoveSpeed = 5.0f;
+            camera.position += cameraMoveInput * cameraMoveSpeed * dt;
+        }
 
         {
-            if (shouldReloadLevel)
-            {
-                shouldReloadLevel = false;
-
-                auto currentLevelPath = std::get<0>(levelList[currentLevelIdx]);
-                auto currentLevelDiscovered = std::get<1>(levelList[currentLevelIdx]);
-
-                auto tiledMap = cgt::LoadTiledMap(currentLevelPath);
-
-                for (tmx_layer* layer = tiledMap->ly_head; layer; layer = layer->next)
-                {
-                    if (strcmp(layer->name, "BASE") == 0)
-                    {
-                        gameGrid = std::make_unique<GameGrid>(tiledMap, layer, currentLevelDiscovered);
-                    }
-                    else if (strcmp(layer->name, "PICKUPS") == 0)
-                    {
-                        pickupGrid = std::make_unique<GameGrid>(tiledMap, layer, currentLevelDiscovered);
-                    }
-                }
-                CGT_ASSERT_ALWAYS(gameGrid.get() && pickupGrid.get());
-
-                tileset = Tileset::LoadFrom(*render, tiledMap, tiledMap->ts_head->tileset, "assets/examples/maps");
-
-                player.Spawn(*gameGrid);
-
-                tmx_map_free(tiledMap);
-            }
-
-            glm::vec2 cameraMoveInput(0.0f);
-            const u8* keyboard = SDL_GetKeyboardState(nullptr);
-            if (keyboard[SDL_SCANCODE_A])
-            {
-                cameraMoveInput.x -= 1.0f;
-            }
-            if (keyboard[SDL_SCANCODE_D])
-            {
-                cameraMoveInput.x += 1.0f;
-            }
-            if (keyboard[SDL_SCANCODE_S])
-            {
-                cameraMoveInput.y -= 1.0f;
-            }
-            if (keyboard[SDL_SCANCODE_W])
-            {
-                cameraMoveInput.y += 1.0f;
-            }
-
-            const float cameraMoveInputMagnitudeSqr = glm::dot(cameraMoveInput, cameraMoveInput);
-            if (cameraMoveInputMagnitudeSqr > 0.0f)
-            {
-                cameraMoveInput = cameraMoveInput / sqrt(cameraMoveInputMagnitudeSqr);
-                const glm::vec2 isometricCorrection(1.0f, 2.0f);
-                cameraMoveInput = cameraMoveInput * isometricCorrection;
-
-                const glm::mat4 isometricRotation = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-                cameraMoveInput = isometricRotation * glm::vec4(cameraMoveInput, 0.0f, 0.0f);
-
-                const float cameraMoveSpeed = 5.0f;
-                camera.position += cameraMoveInput * cameraMoveSpeed * dt;
-            }
-
-            {
-                ImGui::SetNextWindowSize({200, 80}, ImGuiCond_FirstUseEver);
-                ImGui::Begin("Render Stats");
-                ImGui::Text("Frame time: %.2fms", dt * 1000.0f);
-                ImGui::Text("Sprites: %d", renderStats.spriteCount);
-                ImGui::Text("Drawcalls: %d", renderStats.drawcallCount);
-                //ImGui::Text("Drawcalls: %d", renderStats.drawcallCount);
-                ImGui::End();
-            }
-
-            commandsInterface.Tick(dt);
-
-            tileset->RenderGameGrid(*gameGrid, renderQueue);
-            tileset->RenderGameGrid(*pickupGrid, renderQueue);
-
-            const Command currentCommand = commandQueue.GetCurrent();
-
-            if (player.GetPlayerState() == PlayerStateID::Idle && commandQueue.GetState() == State::Execution)
-            {
-                GameTile::Type previousViewedTile = player.GetViewedTile(*gameGrid);
-                player.Execute(currentCommand.ID, *gameGrid);
-                GameTile::Type currentViewedTile = player.GetViewedTileNext(*gameGrid);
-                commandQueue.StepForward(previousViewedTile, currentViewedTile);
-            }
-            else if(commandQueue.GetState() == State::Finished && player.GetPlayerState() != PlayerStateID::ReachedGoal)
-            {
-                commandQueue.Reset();
-                commandQueue.SetState(State::Execution);
-
-                currentLevelIdx = ++currentLevelIdx % SDL_arraysize(levelList);
-                shouldReloadLevel = true;
-            }
-            else if (player.GetPlayerState() == PlayerStateID::Dead || commandQueue.GetState() == State::NeedRestart)
-            {
-                commandQueue.Reset();
-                player.Spawn(*gameGrid);
-                gameGrid->UndiscoverAllTiles();
-            }
-
-            player.Update(dt);
-
-            if (player.GetPlayerState() == PlayerStateID::Dying)
-            {
-                commandQueue.Reset();
-            }
-
-            player.Render(renderQueue);
-
-            ImguiDebugRenderPlayerStats(player, *gameGrid, commandQueue);
+            ImGui::SetNextWindowSize({200, 80}, ImGuiCond_FirstUseEver);
+            ImGui::Begin("Render Stats");
+            ImGui::Text("Frame time: %.2fms", dt * 1000.0f);
+            ImGui::Text("Sprites: %d", renderStats.spriteCount);
+            ImGui::Text("Drawcalls: %d", renderStats.drawcallCount);
+            ImGui::End();
         }
+
+        commandsInterface.Tick(dt);
+
+        renderQueue.Reset();
+        renderQueue.clearColor = glm::vec4(1.0f, 0.3f, 1.0f, 1.0f);
+
+        tileset->RenderGameGrid(*gameGrid, renderQueue);
+        tileset->RenderGameGrid(*pickupGrid, renderQueue);
+
+        const Command currentCommand = commandQueue.GetCurrent();
+
+        if (player.GetPlayerState() == PlayerStateID::Idle && commandQueue.GetState() == State::Execution)
+        {
+            GameTile::Type previousViewedTile = player.GetViewedTile(*gameGrid);
+            player.Execute(currentCommand.ID, *gameGrid);
+            GameTile::Type currentViewedTile = player.GetViewedTileNext(*gameGrid);
+            commandQueue.StepForward(previousViewedTile, currentViewedTile);
+        }
+        else if(commandQueue.GetState() == State::Finished && player.GetPlayerState() != PlayerStateID::ReachedGoal)
+        {
+            commandQueue.Reset();
+            commandQueue.SetState(State::Execution);
+        }
+        else if (player.GetPlayerState() == PlayerStateID::Dead || commandQueue.GetState() == State::NeedRestart)
+        {
+            commandQueue.Reset();
+            player.Spawn(*gameGrid);
+            gameGrid->UndiscoverAllTiles();
+        }
+        else if (player.GetPlayerState() == PlayerStateID::ReachedGoal)
+        {
+            const int imguiWindowWidth = 180;
+            const int imguiWindowHeight = 60;
+            ImGui::SetNextWindowSize({imguiWindowWidth, imguiWindowHeight});//, ImGuiCond_FirstUseEver);
+            ImGui::SetNextWindowPos({static_cast<float>(window->GetWidth() * 0.5 - imguiWindowWidth * 0.5), static_cast<float>(window->GetHeight() * 0.5 - imguiWindowHeight * 0.5)});
+            bool showWindow = true;
+            ImGui::Begin("You passed the level!", &showWindow, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+            if (ImGui::Button("Next!"))
+            {
+                //load next level
+            }
+            ImGui::End();
+        }
+
+        player.Update(dt);
+
+        if (player.GetPlayerState() == PlayerStateID::Dying)
+        {
+            commandQueue.Reset();
+        }
+
+        player.Render(renderQueue);
+
+        ImguiDebugRenderPlayerStats(player, *gameGrid, commandQueue);
 
         renderStats = render->Submit(renderQueue, camera);
     }
 
+    tmx_map_free(tiledMap);
     return 0;
 }
