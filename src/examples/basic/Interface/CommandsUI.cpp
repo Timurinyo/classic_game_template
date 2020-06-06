@@ -19,11 +19,11 @@ CommandsUI::CommandsUI(std::shared_ptr<cgt::render::IRenderContext> render, Comm
     };
 
     m_CommandUIPropsMap = {
-        { CommandID::None,        { movesTexture, {0.6, 0.00}, {0.8, 0.25} } },
-        { CommandID::MoveForward, { movesTexture, {0.0, 0.00}, {0.2, 0.25} } },
-        { CommandID::TurnLeft,    { movesTexture, {0.4, 0.00}, {0.6, 0.25} } },
-        { CommandID::TurnRight,   { movesTexture, {0.2, 0.00}, {0.4, 0.25} } },
-        { CommandID::Repeat,      { movesTexture, {0.0, 0.25}, {0.2, 0.50} } },
+        { CommandID::None,        { movesTexture, {0.6, 0.00}, {0.8, 0.25}, nullptr } },
+        { CommandID::MoveForward, { movesTexture, {0.0, 0.00}, {0.2, 0.25}, "Move one cell forward" } },
+        { CommandID::TurnLeft,    { movesTexture, {0.4, 0.00}, {0.6, 0.25}, "Turn counterclockwise 90 degrees" } },
+        { CommandID::TurnRight,   { movesTexture, {0.2, 0.00}, {0.4, 0.25}, "Turn clockwise 90 degrees" } },
+        { CommandID::Repeat,      { movesTexture, {0.0, 0.25}, {0.2, 0.50}, "Repeat previous command X times" } },
     };
 }
 
@@ -146,7 +146,7 @@ void CommandsUI::DrawCommandImage(const Command& command, bool isHighlighted)
 bool CommandsUI::DrawCommandImageButton(const Command& command)
 {
     const CommandUIProps& props = GetCommandUIProps(command);
-    return m_Render->ImGuiImageButton(props.Texture, props.Size, props.UV0, props.UV1);
+    return m_Render->ImGuiImageButton(props.Texture, props.Size, props.UV0, props.UV1, props.Description);
 }
 
 CommandUIProps CommandsUI::GetCommandUIProps(const Command& command) const
@@ -159,9 +159,9 @@ CommandUIProps CommandsUI::GetCommandUIProps(const Command& command) const
     float uvDeltaX = props.UV1.x - props.UV0.x;
     if (!command.CurrentRepeats)
     {
-        return { props.Texture, {0.8, 0.0}, {1.0, 0.5}, props.Size };
+        return { props.Texture, {0.8, 0.0}, {1.0, 0.5}, props.Description, props.Size };
     }
     ImVec2 UV0(uvDeltaX * (command.CurrentRepeats - 1), props.UV0.y);
     ImVec2 UV1(uvDeltaX *  command.CurrentRepeats     , props.UV1.y);
-    return { props.Texture, UV0, UV1, props.Size };
+    return { props.Texture, UV0, UV1, props.Description, props.Size };
 }
