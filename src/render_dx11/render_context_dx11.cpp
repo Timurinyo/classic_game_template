@@ -383,8 +383,19 @@ HRESULT RenderContextDX11::LoadTextureFromMemory(const u8* data, usize size, Tex
     return hresult;
 }
 
+static void ShowHelpMarker(const char* desc)
+{
+    if(ImGui::IsItemHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::PushTextWrapPos(450.0f);
+        ImGui::TextUnformatted(desc);
+        ImGui::PopTextWrapPos();
+        ImGui::EndTooltip();
+    }
+}
 
-void RenderContextDX11::ImGuiImage(const TextureHandle& textrue, ImVec2 size, ImVec2 uv0, ImVec2 uv1, ImVec4 tint)
+void RenderContextDX11::ImGuiImage(const TextureHandle& textrue, ImVec2 size, ImVec2 uv0, ImVec2 uv1, ImVec4 tint, const char* tooltip)
 {
     // copy-pasted from Submit
     auto GetSpriteTexture = [this](const TextureHandle& tx)
@@ -395,19 +406,7 @@ void RenderContextDX11::ImGuiImage(const TextureHandle& textrue, ImVec2 size, Im
     };
 
     ImGui::Image(GetSpriteTexture(textrue), size, uv0, uv1, tint);
-}
-
-static void ShowHelpMarker(const char* desc)
-{
-    //ImGui::TextDisabled("(?)");
-    if(ImGui::IsItemHovered())
-    {
-        ImGui::BeginTooltip();
-        ImGui::PushTextWrapPos(450.0f);
-        ImGui::TextUnformatted(desc);
-        ImGui::PopTextWrapPos();
-        ImGui::EndTooltip();
-    }
+    ImGui::SameLine(); ShowHelpMarker(tooltip);
 }
 
 bool RenderContextDX11::ImGuiImageButton(const TextureHandle& textrue, ImVec2 size, ImVec2 uv0, ImVec2 uv1, const char* tooltip)

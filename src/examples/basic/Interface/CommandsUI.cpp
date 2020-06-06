@@ -135,7 +135,7 @@ void CommandsUI::DrawCommandImage(const Command& command, bool isHighlighted)
         UV0.y += 0.5;
         UV1.y += 0.5;
     }
-    m_Render->ImGuiImage(props.Texture, props.Size, UV0, UV1);
+    m_Render->ImGuiImage(props.Texture, props.Size, UV0, UV1, ImVec4(1, 1, 1, 1), "Drag&Drop commands here");
 }
 
 bool CommandsUI::DrawCommandImageButton(const Command& command)
