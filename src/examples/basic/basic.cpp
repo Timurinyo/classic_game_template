@@ -50,7 +50,7 @@ int GameMain()
     camera.windowHeight = window->GetHeight();
     camera.pixelsPerUnit = 87.0f;
 
-    auto tiledMap = cgt::LoadTiledMap("assets/examples/maps/level_01.tmx");
+    auto tiledMap = cgt::LoadTiledMap("assets/examples/maps/level_02.tmx");
 
     std::unique_ptr<GameGrid> gameGrid;
     std::unique_ptr<GameGrid> pickupGrid;

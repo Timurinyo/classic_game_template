@@ -67,7 +67,7 @@ public:
     void Die(const float dt);
 
     void Execute(CommandID command, GameGrid& grid);
-    GameTile::Type GetViewedTile(GameGrid& grid) const { return grid.At(m_CoordsCurrent.x + m_DirectionsMap[m_DirectionCurrent].x, -m_CoordsCurrent.y - m_DirectionsMap[m_DirectionCurrent].y).type; }
+    GameTile::Type GetViewedTile(GameGrid& grid) const;
     GameTile::Type GetViewedTileNext(GameGrid& grid) const;
 
     PlayerStateID GetPlayerState() const { return m_PlayerState; }
@@ -112,8 +112,8 @@ private:
     float m_MoveTimer, m_RotateTimer;
     float m_DieTimer = 0;
 
-    const float m_TimePerMove = 1.f;
-    const float m_TimePerRotation = 1.f;
+    const float m_TimePerMove = 0.75f;
+    const float m_TimePerRotation = 0.5f;
     const float m_TimePerDeath = 1.f;
 
     PlayerStateID m_PlayerState = PlayerStateID::Idle;
