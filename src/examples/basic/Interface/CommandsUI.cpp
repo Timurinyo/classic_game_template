@@ -16,14 +16,16 @@ CommandsUI::CommandsUI(std::shared_ptr<cgt::render::IRenderContext> render, Comm
         { CommandID::Repeat, "x3", 3, 3 },
         { CommandID::Repeat, "x4", 4, 4 },
         { CommandID::Repeat, "x5", 5, 5 },
+        { CommandID::DoWhile, "Do While" },
     };
 
     m_CommandUIPropsMap = {
-        { CommandID::None,        { movesTexture, {0.6, 0.00}, {0.8, 0.25} } },
-        { CommandID::MoveForward, { movesTexture, {0.0, 0.00}, {0.2, 0.25} } },
-        { CommandID::TurnLeft,    { movesTexture, {0.4, 0.00}, {0.6, 0.25} } },
-        { CommandID::TurnRight,   { movesTexture, {0.2, 0.00}, {0.4, 0.25} } },
-        { CommandID::Repeat,      { movesTexture, {0.0, 0.25}, {0.2, 0.50} } },
+        { CommandID::None,        { movesTexture, {0.3, 0.00}, {0.4, 0.25} } },
+        { CommandID::MoveForward, { movesTexture, {0.0, 0.00}, {0.1, 0.25} } },
+        { CommandID::TurnLeft,    { movesTexture, {0.2, 0.00}, {0.3, 0.25} } },
+        { CommandID::TurnRight,   { movesTexture, {0.1, 0.00}, {0.2, 0.25} } },
+        { CommandID::Repeat,      { movesTexture, {0.0, 0.25}, {0.1, 0.50} } },
+        { CommandID::DoWhile,     { movesTexture, {0.5, 0.00}, {0.6, 0.25} } },
     };
 }
 
