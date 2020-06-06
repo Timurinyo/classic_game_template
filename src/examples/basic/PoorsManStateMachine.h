@@ -2,6 +2,7 @@ enum class GameState
 {
     LevelStart,
     InGame,
+    Drown,
     FinishedLevel,
 };
 

@@ -82,7 +82,7 @@ void ImGuiRenderStats(const float dt,cgt::render::RenderStats &renderStats)
     ImGui::End();
 }
 
-void ImGuiShowLevelWelcomeText(std::shared_ptr<cgt::Window> window,std::string &currentLevelDescription,GameStateKeeper &gameStateKeeper)
+void ImGuiShowLevelWelcomeText(std::shared_ptr<cgt::Window> window, std::string& currentLevelDescription, GameStateKeeper& gameStateKeeper)
 {
     const int imguiWindowWidth = 300;
     const int imguiWindowHeight = 150;
@@ -94,6 +94,24 @@ void ImGuiShowLevelWelcomeText(std::shared_ptr<cgt::Window> window,std::string &
     ImGui::Text(currentLevelDescription.c_str());
     ImGui::PopTextWrapPos();
     if(ImGui::Button("Start!"))
+    {
+        gameStateKeeper.SetState(GameState::InGame);
+    }
+    ImGui::End();
+}
+
+void ImGuiShowDrownMessage(std::shared_ptr<cgt::Window> window, GameStateKeeper& gameStateKeeper)
+{
+    const int imguiWindowWidth = 300;
+    const int imguiWindowHeight = 150;
+    ImGui::SetNextWindowSize({imguiWindowWidth,imguiWindowHeight});
+    ImGui::SetNextWindowPos({static_cast<float>(window->GetWidth() * 0.5 - imguiWindowWidth * 0.5),static_cast<float>(window->GetHeight() * 0.5 - imguiWindowHeight * 0.5)});
+    bool showWindow = true;
+    ImGui::Begin("Level description",&showWindow,ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+    ImGui::PushTextWrapPos(ImGui::GetFontSize() * 20.f);
+    ImGui::Text("Our witch can't swim! Try to avoid water.");
+    ImGui::PopTextWrapPos();
+    if(ImGui::Button("OK!"))
     {
         gameStateKeeper.SetState(GameState::InGame);
     }
@@ -179,9 +197,23 @@ int GameMain()
 
         commandsInterface.Tick(dt);
 
-        if (gameStateKeeper.GetState() == GameState::LevelStart)
+        switch(gameStateKeeper.GetState())
+        {
+        case GameState::LevelStart:
         {
             ImGuiShowLevelWelcomeText(window, level.description, gameStateKeeper);
+            break;
+        }
+        case GameState::Drown:
+        {
+            ImGuiShowDrownMessage(window, gameStateKeeper);
+            break;
+        }
+        default:
+            break;
+        }
+        if (gameStateKeeper.GetState() == GameState::LevelStart)
+        {
         }
 
         renderQueue.Reset();
@@ -209,6 +241,7 @@ int GameMain()
             commandQueue.Reset();
             player.Spawn(*level.gameGrid);
             level.gameGrid->UndiscoverAllTiles();
+            gameStateKeeper.SetState(GameState::Drown);
         }
         else if (player.GetPlayerState() == PlayerStateID::ReachedGoal)
         {
