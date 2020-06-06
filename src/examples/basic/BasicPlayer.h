@@ -113,9 +113,9 @@ private:
 
     const DirectionID m_DirectionDefault = DirectionID::ES;
 
-    DirectionID m_DirectionCurrent = DirectionID::SW;
-    DirectionID m_DirectionPrev = DirectionID::S;
-    DirectionID m_DirectionNext = DirectionID::S;
+    DirectionID m_DirectionCurrent = m_DirectionDefault;
+    DirectionID m_DirectionPrev =    m_DirectionDefault;
+    DirectionID m_DirectionNext =    m_DirectionDefault;
 
     std::vector<glm::vec2> m_DirectionsMap;
 

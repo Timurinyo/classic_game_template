@@ -145,6 +145,7 @@ int GameMain()
     const char* levelList[] =
         {
             "assets/examples/maps/level_01.tmx",
+            "assets/examples/maps/level_01.tmx",
             "assets/examples/maps/level_02.tmx",
             "assets/examples/maps/level_00.tmx",
         };
@@ -192,7 +193,10 @@ int GameMain()
 
         HandleCameraControl(camera, dt);
 
+#ifdef DEBUG
         ImGuiRenderStats(dt, renderStats);
+#endif // DEBUG
+
 
         commandsInterface.Tick(dt);
 
@@ -210,9 +214,6 @@ int GameMain()
         }
         default:
             break;
-        }
-        if (gameStateKeeper.GetState() == GameState::LevelStart)
-        {
         }
 
         renderQueue.Reset();
@@ -235,12 +236,18 @@ int GameMain()
             commandQueue.Reset();
             commandQueue.SetState(State::Execution);
         }
-        else if (player.GetPlayerState() == PlayerStateID::Dead || commandQueue.GetState() == State::NeedRestart)
+        else if (player.GetPlayerState() == PlayerStateID::Dead)
         {
             commandQueue.Reset();
             player.Spawn(*level.gameGrid);
             level.gameGrid->UndiscoverAllTiles();
             gameStateKeeper.SetState(GameState::Drown);
+        }
+        else if (commandQueue.GetState() == State::NeedRestart)
+        {
+            commandQueue.Reset();
+            player.Spawn(*level.gameGrid);
+            level.gameGrid->UndiscoverAllTiles();
         }
         else if (player.GetPlayerState() == PlayerStateID::ReachedGoal)
         {
@@ -250,6 +257,7 @@ int GameMain()
             ImGui::SetNextWindowPos({static_cast<float>(window->GetWidth() * 0.5 - imguiWindowWidth * 0.5), static_cast<float>(window->GetHeight() * 0.5 - imguiWindowHeight * 0.5)});
             bool showWindow = true;
             ImGui::Begin("You passed the level!", &showWindow, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+            // TODO: add info on blocks used
             if (ImGui::Button("Next!"))
             {
                 shouldLoadLevel = true;
@@ -267,7 +275,10 @@ int GameMain()
 
         player.Render(renderQueue);
 
+#ifdef DEBUG
         ImguiDebugRenderPlayerStats(player, *level.gameGrid, commandQueue);
+#endif // DEBUG
+
 
         renderStats = render->Submit(renderQueue, camera);
     }

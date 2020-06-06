@@ -249,8 +249,8 @@ void BasicPlayer::Execute(CommandID command, GameGrid& grid)
 
 GameTile::Type BasicPlayer::GetViewedTile(GameGrid& grid) const
 {
-    u32 x = m_CoordsCurrent.x + m_DirectionsMap[m_DirectionCurrent].x;
-    u32 y = -m_CoordsCurrent.y - m_DirectionsMap[m_DirectionCurrent].y;
+    u32 x = m_CoordsPrev.x + m_DirectionsMap[m_DirectionPrev].x;
+    u32 y = -m_CoordsPrev.y - m_DirectionsMap[m_DirectionPrev].y;
 
     if (x >= 0 && x < grid.Width() && y >= 0 && y < grid.Height())
     {
@@ -276,6 +276,7 @@ void BasicPlayer::Spawn(GameGrid& gameGrid)
 
     m_CoordsCurrent = glm::vec2(tempCoords.x, tempCoords.y * -1.f);
     m_CoordsNext = m_CoordsCurrent;
+    m_CoordsPrev = m_CoordsCurrent;
 
     m_IsPlayerSpawned = true;
 
@@ -284,7 +285,10 @@ void BasicPlayer::Spawn(GameGrid& gameGrid)
     m_CurrentAngle = m_CurrentAngleDefault;
 
     m_DirectionCurrent = m_DirectionDefault;
+    m_DirectionPrev = m_DirectionDefault;
+    m_DirectionNext = m_DirectionDefault;
 
+    m_CurrentHatType = HatType::WizardHat;
 }
 
 void BasicPlayer::InitTextures(const char* parentFolderPath, cgt::render::IRenderContext& render)
