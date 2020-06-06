@@ -68,7 +68,7 @@ public:
 
     void Execute(CommandID command, GameGrid& grid);
     GameTile::Type GetViewedTile(GameGrid& grid) const { return grid.At(m_CoordsCurrent.x + m_DirectionsMap[m_DirectionCurrent].x, -m_CoordsCurrent.y - m_DirectionsMap[m_DirectionCurrent].y).type; }
-    GameTile::Type GetViewedTileNext(GameGrid& grid) const { return grid.At(m_CoordsNext.x + m_DirectionsMap[m_DirectionNext].x, -m_CoordsNext.y - m_DirectionsMap[m_DirectionNext].y).type; }
+    GameTile::Type GetViewedTileNext(GameGrid& grid) const;
 
     PlayerStateID GetPlayerState() const { return m_PlayerState; }
     void SetPlayerState(PlayerStateID playerState) {  m_PlayerState = playerState; }

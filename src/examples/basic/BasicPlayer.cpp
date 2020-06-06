@@ -237,6 +237,17 @@ void BasicPlayer::Execute(CommandID command, GameGrid& grid)
     }
 }
 
+GameTile::Type BasicPlayer::GetViewedTileNext(GameGrid& grid) const
+{
+    u32 x = m_CoordsNext.x + m_DirectionsMap[m_DirectionNext].x;
+    u32 y = -m_CoordsNext.y - m_DirectionsMap[m_DirectionNext].y;
+    if (x >= 0 && x < grid.Width() && y >= 0 && y < grid.Height())
+    {
+        return grid.At(x, y).type;
+    }
+    return GameTile::Type::Undefined;
+}
+
 void BasicPlayer::Spawn(GameGrid& gameGrid)
 {
     glm::vec2 tempCoords = gameGrid.GetStartTileCoords();
