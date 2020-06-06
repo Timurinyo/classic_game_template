@@ -5,7 +5,7 @@
 class GameGrid
 {
 public:
-    GameGrid(tmx_map* map, tmx_layer* layer);
+    GameGrid(tmx_map* map, tmx_layer* layer, bool initialyDiscovered);
 
     GameTile& At(u32 x, u32 y);
 

@@ -22,6 +22,7 @@ struct GameTile
 
     Type type = Type::Undefined;
     u32 variant = 0;
+    bool discovered = false;
 
     static GameTile FromTMXTile(tmx_tile& tile);
 };

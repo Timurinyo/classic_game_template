@@ -22,7 +22,11 @@
    <property name="VARIANT" type="int" value="5"/>
   </properties>
  </tile>
- <tile id="4" type="GOAL"/>
+ <tile id="4" type="GOAL">
+  <properties>
+   <property name="DISCOVERED" type="bool" value="true"/>
+  </properties>
+ </tile>
  <tile id="5" type="PICKUP">
   <properties>
    <property name="VARIANT" type="int" value="3"/>
@@ -74,7 +78,11 @@
   </properties>
  </tile>
  <tile id="15" type="BALL"/>
- <tile id="16" type="START"/>
+ <tile id="16" type="START">
+  <properties>
+   <property name="DISCOVERED" type="bool" value="true"/>
+  </properties>
+ </tile>
  <tile id="17" type="LATCH">
   <properties>
    <property name="VARIANT" type="int" value="0"/>

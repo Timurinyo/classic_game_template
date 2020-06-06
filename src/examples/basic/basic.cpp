@@ -56,11 +56,11 @@ int GameMain()
     {
         if (strcmp(layer->name, "BASE") == 0)
         {
-            gameGrid = std::make_unique<GameGrid>(tiledMap, layer);
+            gameGrid = std::make_unique<GameGrid>(tiledMap, layer, false);
         }
         else if (strcmp(layer->name, "PICKUPS") == 0)
         {
-            pickupGrid = std::make_unique<GameGrid>(tiledMap, layer);
+            pickupGrid = std::make_unique<GameGrid>(tiledMap, layer, false);
         }
     }
     CGT_ASSERT_ALWAYS(gameGrid.get() && pickupGrid.get());

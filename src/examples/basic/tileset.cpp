@@ -58,6 +58,10 @@ void Tileset::RenderGameGrid(GameGrid& grid, cgt::render::RenderQueue& queue)
             CGT_ASSERT(variantsIter != m_Sprites.end());
             cgt::render::SpriteDrawRequest sprite = variantsIter->second[tile.variant];
             sprite.position = glm::vec2(x, y * -1.0f);
+            if (!tile.discovered)
+            {
+                sprite.colorTint = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+            }
             queue.sprites.emplace_back(std::move(sprite));
         }
     }

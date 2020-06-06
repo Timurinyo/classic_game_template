@@ -2,7 +2,7 @@
 
 #include <examples/basic/game_grid.h>
 
-GameGrid::GameGrid(tmx_map* map, tmx_layer* layer)
+GameGrid::GameGrid(tmx_map* map, tmx_layer* layer, bool initialyDiscovered)
     : m_Width(map->width)
     , m_Height(map->height)
 {
@@ -18,6 +18,10 @@ GameGrid::GameGrid(tmx_map* map, tmx_layer* layer)
             if (tile)
             {
                 this->At(x, y) = GameTile::FromTMXTile(*tile);
+                if (initialyDiscovered)
+                {
+                    this->At(x, y).discovered = true;
+                }
 
                 if (this->At(x, y).type == GameTile::Type::Start)
                 {

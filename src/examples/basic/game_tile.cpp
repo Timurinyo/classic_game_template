@@ -21,6 +21,13 @@ GameTile GameTile::FromTMXTile(tmx_tile& tile)
         CGT_ASSERT(newTile.variant < MAX_VARIANTS);
     }
 
+    tmx_property* discoveredProp = tmx_get_property(tile.properties, "DISCOVERED");
+    if (discoveredProp)
+    {
+        CGT_ASSERT(discoveredProp->type == tmx_property_type::PT_BOOL);
+        newTile.discovered = discoveredProp->value.boolean;
+    }
+
     if (match(tile.type, "START")) {
         newTile.type = Type::Start;
     } else if (match(tile.type, "GOAL")) {
