@@ -2,9 +2,11 @@
 #include <imgui.h>
 
 
-CommandsUI::CommandsUI(std::shared_ptr<cgt::render::IRenderContext> render, CommandQueue* queue)
+CommandsUI::CommandsUI(std::shared_ptr<cgt::render::IRenderContext> render,
+    CommandQueue* queue, u32 windowWidth, u32 windowHeight)
     : m_CommandQueue(queue)
     , m_Render(render)
+    , m_WindowSize(windowWidth, windowHeight)
 {
     cgt::render::TextureHandle movesTexture = m_Render->LoadTexture("assets/examples/textures/Moves.png");
 
@@ -31,10 +33,11 @@ CommandsUI::CommandsUI(std::shared_ptr<cgt::render::IRenderContext> render, Comm
 
 void CommandsUI::Tick(const float dt)
 {
+    DrawCommandQueue();
+
     ImGui::SetNextWindowSize({ 600, 250 }, ImGuiCond_FirstUseEver);
     ImGui::Begin("Commands");
 
-    DrawCommandQueue();
     ImGui::Separator();
     DrawCommandSelectButtons();
 
@@ -58,6 +61,10 @@ void CommandsUI::Tick(const float dt)
 
 void CommandsUI::DrawCommandQueue()
 {
+    bool windowOpen = true;
+    ImGui::SetNextWindowSize({ 90, m_WindowSize.y });
+    ImGui::SetNextWindowPos({ m_WindowSize.x - 90, 0 });
+    ImGui::Begin("Command Queue", &windowOpen, ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
     bool shouldHighlight = false;
     for(int i = 0; i < m_CommandQueue->GetAll().size(); ++i)
     {
@@ -75,10 +82,7 @@ void CommandsUI::DrawCommandQueue()
         }
 
         DrawCommandImage(command, shouldHighlight);
-        if (i < m_CommandQueue->GetAll().size() - 1)
-        {
-            ImGui::SameLine();
-        }
+        ImGui::NewLine();
 
         if (ImGui::BeginDragDropTarget())
         {
@@ -93,6 +97,7 @@ void CommandsUI::DrawCommandQueue()
 
         ImGui::PopID();
     }
+    ImGui::End();
 }
 
 void CommandsUI::DrawCommandSelectButtons()

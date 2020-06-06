@@ -74,7 +74,7 @@ int GameMain()
     GameStateKeeper gameStateKeeper;
 
     CommandQueue commandQueue;
-    CommandsUI commandsInterface(render, &commandQueue);
+    CommandsUI commandsInterface(render, &commandQueue, window->GetWidth(), window->GetHeight());
 
 
     cgt::Clock frameClock;
