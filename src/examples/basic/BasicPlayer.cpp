@@ -5,23 +5,66 @@
 
 void BasicPlayer::Render(cgt::render::RenderQueue& queue)
 {
-    if (!m_IsPlayerSpawned)
+    if(!m_IsPlayerSpawned)
     {
         return;
     }
-    cgt::render::TextureHandle texture;
-    texture = m_Textures[m_DirectionCurrent];
+
+    RenderAvatar(queue);
+    RenderHat(queue);
+    return;
+}
+
+void BasicPlayer::RenderHat(cgt::render::RenderQueue& queue)
+{
+    if(m_PlayerState == PlayerStateID::Dying)
+    {
+        return;
+    }
+
+    cgt::render::TextureHandle hatTexture;
+    if (m_CurrentHatTextures)
+    {
+        hatTexture = m_CurrentHatTextures->at(m_DirectionCurrent);
+    }
 
     cgt::render::SpriteDrawRequest sprite;
-    sprite.position = m_CoordsCurrent;
+    sprite.position = m_CoordsCurrent + glm::vec2(-0.9, 0.9) - m_DirectionsMap[m_DirectionCurrent] * glm::vec2(0.15, 0.15);
     sprite.rotation = 45.f;
-    if (m_PlayerState == PlayerStateID::Dying)
+
+    sprite.texture = std::move(hatTexture);
+    sprite.scale ={1.1f,1.536};
+    queue.sprites.emplace_back(std::move(sprite));
+}
+
+void BasicPlayer::RenderAvatar(cgt::render::RenderQueue &queue)
+{
+    cgt::render::TextureHandle avatarTexture;
+    avatarTexture = m_AvatarTextures[m_DirectionCurrent];
+
+    cgt::render::SpriteDrawRequest sprite;
+    sprite.position = m_CoordsCurrent + glm::vec2(-0.3, 0.3);
+    sprite.rotation = 45.f;
+
+    switch(m_PlayerState)
+    {
+    case PlayerStateID::Dying:
     {
         sprite.rotation = 90.f;
-        sprite.colorTint = glm::vec4(1, 0.3, 0.3, 1);
+        sprite.colorTint = glm::vec4(1,0.3,0.3,1);
+        break;
     }
-    sprite.texture = std::move(texture);
-    sprite.scale = { 1.f, 1.536 };
+    case PlayerStateID::ReachedGoal:
+    {
+        m_CurrentHatTextures = &m_CrownTextures;
+        break;
+    }
+    default:
+        break;
+    }
+
+    sprite.texture = std::move(avatarTexture);
+    sprite.scale ={1.f,1.536};
     queue.sprites.emplace_back(std::move(sprite));
 }
 
@@ -33,63 +76,85 @@ void BasicPlayer::Update(float dt)
         break;
     case PlayerStateID::Rotating:
     {
-        m_RotateTimer += dt;
-
-        float newPlayerDirection; 
-
-        if (((m_DirectionNext - m_DirectionPrev) > DirectionID::Count/2))
-        {
-            int directionNextTemp = m_DirectionNext - DirectionID::Count;
-            newPlayerDirection = LerpFloat(m_DirectionPrev, directionNextTemp, m_RotateTimer / m_TimePerRotation);
-            if (newPlayerDirection < 0)
-            {
-                newPlayerDirection += DirectionID::Count;
-            }
-        }
-        else if ((m_DirectionNext - m_DirectionPrev) < -DirectionID::Count/2)
-        {
-            int directionPreviousTemp = m_DirectionPrev - DirectionID::Count;
-            newPlayerDirection = LerpFloat(directionPreviousTemp, m_DirectionNext, m_RotateTimer / m_TimePerRotation);
-            if(newPlayerDirection < 0)
-            {
-                newPlayerDirection += DirectionID::Count;
-            }
-        }
-        else
-        {
-            newPlayerDirection = LerpFloat(m_DirectionPrev, m_DirectionNext, m_RotateTimer / m_TimePerRotation);
-        }
-
-        m_DirectionCurrent = static_cast<DirectionID>(std::floor(newPlayerDirection));
-
-        if (m_RotateTimer > m_TimePerRotation)
-        {
-            m_RotateTimer = 0;
-            m_PlayerState = PlayerStateID::Idle;
-        }
+        Rotate(dt);
         break;
     }
     case PlayerStateID::Moving:
     {
-        m_MoveTimer += dt;
-
-        m_CoordsCurrent = LerpVec2(m_CoordsPrev, m_CoordsNext, m_MoveTimer / m_TimePerMove);
-
-        if (m_MoveTimer > m_TimePerMove)
-        {
-            m_MoveTimer = 0;
-            m_PlayerState = PlayerStateID::Idle;
-            if (m_NextTileType == GameTile::Type::Water)
-            {
-                m_PlayerState = PlayerStateID::Dying;
-            }
-        }
+        MoveForward(dt);
         break;
     }
     default:
         break;
     }
 
+}
+
+void BasicPlayer::MoveForward(float dt)
+{
+    m_MoveTimer += dt;
+
+    m_CoordsCurrent = LerpVec2(m_CoordsPrev,m_CoordsNext,m_MoveTimer / m_TimePerMove);
+
+    if (m_MoveTimer > m_TimePerMove)
+    {
+        m_MoveTimer = 0;
+        m_PlayerState = PlayerStateID::Idle;
+
+        switch(m_NextTileType)
+        {
+        case GameTile::Type::Goal:
+        {
+            m_PlayerState = PlayerStateID::ReachedGoal;
+            break;
+        }
+        case GameTile::Type::Water:
+        {
+            m_PlayerState = PlayerStateID::Dying;
+            break;
+        }
+        default:
+            break;
+        }
+    }
+}
+
+void BasicPlayer::Rotate(float dt)
+{
+    m_RotateTimer += dt;
+
+    float newPlayerDirection;
+
+    if(((m_DirectionNext - m_DirectionPrev) > DirectionID::Count/2))
+    {
+        int directionNextTemp = m_DirectionNext - DirectionID::Count;
+        newPlayerDirection = LerpFloat(m_DirectionPrev,directionNextTemp,m_RotateTimer / m_TimePerRotation);
+        if(newPlayerDirection < 0)
+        {
+            newPlayerDirection += DirectionID::Count;
+        }
+    }
+    else if((m_DirectionNext - m_DirectionPrev) < -DirectionID::Count/2)
+    {
+        int directionPreviousTemp = m_DirectionPrev - DirectionID::Count;
+        newPlayerDirection = LerpFloat(directionPreviousTemp,m_DirectionNext,m_RotateTimer / m_TimePerRotation);
+        if(newPlayerDirection < 0)
+        {
+            newPlayerDirection += DirectionID::Count;
+        }
+    }
+    else
+    {
+        newPlayerDirection = LerpFloat(m_DirectionPrev,m_DirectionNext,m_RotateTimer / m_TimePerRotation);
+    }
+
+    m_DirectionCurrent = static_cast<DirectionID>(std::floor(newPlayerDirection));
+
+    if(m_RotateTimer > m_TimePerRotation)
+    {
+        m_RotateTimer = 0;
+        m_PlayerState = PlayerStateID::Idle;
+    }
 }
 
 void BasicPlayer::Execute(CommandID command, GameGrid& grid)
@@ -106,7 +171,6 @@ void BasicPlayer::Execute(CommandID command, GameGrid& grid)
         m_CoordsPrev = m_CoordsCurrent;
         m_CoordsNext = m_CoordsCurrent + m_DirectionsMap[m_DirectionCurrent];
 
-        //TODO: react on grid.At(m_CoordsNext). Could be Drowning or Confusion
         m_NextTileType = grid.At(m_CoordsNext.x, -m_CoordsNext.y).type;
 
         break;
@@ -151,13 +215,20 @@ void BasicPlayer::Spawn(GameGrid& gameGrid)
     m_PlayerState = PlayerStateID::Idle;
 }
 
-void BasicPlayer::InitTextures(const char* path, cgt::render::IRenderContext& render)
+void BasicPlayer::InitTextures(const char* parentFolderPath, cgt::render::IRenderContext& render)
 {
     for (int i = 0; i < DirectionID::Count; i++)
     {
-        std::string fullImagePath = fmt::format("{}_000{}.png", path, i);
-        m_Textures[static_cast<DirectionID>(i)] = render.LoadTexture(fullImagePath.c_str());
+        std::string avatarImagePath = fmt::format("{}/char01_000{}.png", parentFolderPath, i);
+        std::string hatImagePath = fmt::format("{}/WizardHat000{}.png", parentFolderPath, i);
+        std::string crownImagePath = fmt::format("{}/crown000{}.png", parentFolderPath, i);
+
+        m_AvatarTextures[static_cast<DirectionID>(i)] = render.LoadTexture(avatarImagePath.c_str());
+        m_MagicHatTextures[static_cast<DirectionID>(i)] = render.LoadTexture(hatImagePath.c_str());
+        m_CrownTextures[static_cast<DirectionID>(i)] = render.LoadTexture(crownImagePath.c_str());
     }
+
+
 }
 
 void BasicPlayer::InitDirectionsMap()

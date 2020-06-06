@@ -27,7 +27,7 @@ int GameMain()
     GameGrid gameGrid(tiledMap);
 
     bool shouldGo = false;
-    BasicPlayer player("assets/examples/textures/player/char01", *render);
+    BasicPlayer player("assets/examples/textures/player", *render);
 
     player.Spawn(gameGrid);
 
