@@ -385,7 +385,7 @@ HRESULT RenderContextDX11::LoadTextureFromMemory(const u8* data, usize size, Tex
 
 static void ShowHelpMarker(const char* desc)
 {
-    if(ImGui::IsItemHovered())
+    if(ImGui::IsItemHovered() && desc)
     {
         ImGui::BeginTooltip();
         ImGui::PushTextWrapPos(450.0f);

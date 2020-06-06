@@ -2,6 +2,7 @@
 
 #include <examples/basic/game_grid.h>
 #include <examples/basic/tileset.h>
+#include <examples/basic/game_level.h>
 
 #include "CommandQueue.h"
 #include "Interface/CommandsUI.h"
@@ -114,49 +115,17 @@ int GameMain()
     camera.windowHeight = window->GetHeight();
     camera.pixelsPerUnit = 87.0f;
 
-    auto tiledMap = cgt::LoadTiledMap("assets/examples/maps/level_01.tmx");
-    tmx_property* descriptionProperty = tmx_get_property(tiledMap->properties, "DESCRIPTION");
-    std::string currentLevelDescription;
-    if (descriptionProperty)
-    {
-        CGT_ASSERT(descriptionProperty->type == tmx_property_type::PT_STRING)
-        currentLevelDescription = descriptionProperty->value.string;
-    }
-
-
-    std::unique_ptr<GameGrid> gameGrid;
-    std::unique_ptr<GameGrid> pickupGrid;
-    for (tmx_layer* layer = tiledMap->ly_head; layer; layer = layer->next)
-    {
-        if (strcmp(layer->name, "BASE") == 0)
+    GameLevel level;
+    bool shouldLoadLevel = true;
+    const char* levelList[] =
         {
-            tmx_property* discoveredProperty = tmx_get_property(layer->properties, "DISCOVERED");
-            bool isMapDiscovered = false; 
-            if (discoveredProperty)
-            {
-                isMapDiscovered = discoveredProperty->value.boolean;
-            }
-
-            gameGrid = std::make_unique<GameGrid>(tiledMap, layer, isMapDiscovered);
-        }
-        else if (strcmp(layer->name, "PICKUPS") == 0)
-        {
-            tmx_property* discoveredProperty = tmx_get_property(layer->properties,"DISCOVERED");
-            bool isMapDiscovered = false;
-            if (discoveredProperty)
-            {
-                isMapDiscovered = discoveredProperty->value.boolean;
-            }
-
-            pickupGrid = std::make_unique<GameGrid>(tiledMap, layer, isMapDiscovered);
-        }
-    }
-    CGT_ASSERT_ALWAYS(gameGrid.get() && pickupGrid.get());
-
-    auto tileset = Tileset::LoadFrom(*render, tiledMap, tiledMap->ts_head->tileset, "assets/examples/maps");
+            "assets/examples/maps/level_01.tmx",
+            "assets/examples/maps/level_02.tmx",
+            "assets/examples/maps/level_00.tmx",
+        };
+    usize currentLevelIdx = 0;
 
     BasicPlayer player("assets/examples/textures/player", *render);
-    player.Spawn(*gameGrid);
 
     GameStateKeeper gameStateKeeper;
 
@@ -170,6 +139,17 @@ int GameMain()
     bool quitRequested = false;
     while (!quitRequested)
     {
+        if (shouldLoadLevel)
+        {
+            shouldLoadLevel = false;
+            auto levelPath = levelList[currentLevelIdx];
+            level.Load(*render, levelPath, "assets/examples/maps");
+
+            player.Spawn(*level.gameGrid);
+            commandQueue.Reset();
+            gameStateKeeper.SetState(GameState::LevelStart);
+        }
+
         const float dt = frameClock.Tick();
 
         render->NewFrame();
@@ -193,22 +173,22 @@ int GameMain()
 
         if (gameStateKeeper.GetState() == GameState::LevelStart)
         {
-            ImGuiShowLevelWelcomeText(window, currentLevelDescription, gameStateKeeper);
+            ImGuiShowLevelWelcomeText(window, level.description, gameStateKeeper);
         }
 
         renderQueue.Reset();
         renderQueue.clearColor = glm::vec4(1.0f, 0.3f, 1.0f, 1.0f);
 
-        tileset->RenderGameGrid(*gameGrid, renderQueue);
-        tileset->RenderGameGrid(*pickupGrid, renderQueue);
+        level.tileset->RenderGameGrid(*level.gameGrid, renderQueue);
+        level.tileset->RenderGameGrid(*level.pickupGrid, renderQueue);
 
         const Command currentCommand = commandQueue.GetCurrent();
 
         if (player.GetPlayerState() == PlayerStateID::Idle && commandQueue.GetState() == State::Execution)
         {
-            GameTile::Type previousViewedTile = player.GetViewedTile(*gameGrid);
-            player.Execute(currentCommand.ID, *gameGrid);
-            GameTile::Type currentViewedTile = player.GetViewedTileNext(*gameGrid);
+            GameTile::Type previousViewedTile = player.GetViewedTile(*level.gameGrid);
+            player.Execute(currentCommand.ID, *level.gameGrid);
+            GameTile::Type currentViewedTile = player.GetViewedTileNext(*level.gameGrid);
             commandQueue.StepForward(previousViewedTile, currentViewedTile);
         }
         else if(commandQueue.GetState() == State::Finished && player.GetPlayerState() != PlayerStateID::ReachedGoal)
@@ -219,8 +199,8 @@ int GameMain()
         else if (player.GetPlayerState() == PlayerStateID::Dead || commandQueue.GetState() == State::NeedRestart)
         {
             commandQueue.Reset();
-            player.Spawn(*gameGrid);
-            gameGrid->UndiscoverAllTiles();
+            player.Spawn(*level.gameGrid);
+            level.gameGrid->UndiscoverAllTiles();
         }
         else if (player.GetPlayerState() == PlayerStateID::ReachedGoal)
         {
@@ -232,7 +212,8 @@ int GameMain()
             ImGui::Begin("You passed the level!", &showWindow, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
             if (ImGui::Button("Next!"))
             {
-                //load next level
+                shouldLoadLevel = true;
+                currentLevelIdx = ++currentLevelIdx % SDL_arraysize(levelList);
             }
             ImGui::End();
         }
@@ -246,11 +227,10 @@ int GameMain()
 
         player.Render(renderQueue);
 
-        ImguiDebugRenderPlayerStats(player, *gameGrid, commandQueue);
+        ImguiDebugRenderPlayerStats(player, *level.gameGrid, commandQueue);
 
         renderStats = render->Submit(renderQueue, camera);
     }
 
-    tmx_map_free(tiledMap);
     return 0;
 }

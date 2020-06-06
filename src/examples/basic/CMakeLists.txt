@@ -11,7 +11,8 @@ add_executable(example_basic
     game_grid.cpp game_grid.h
     tileset.cpp tileset.h
     game_tile.cpp game_tile.h
-	PoorsManStateMachine.h PoorsManStateMachine.cpp)
+	PoorsManStateMachine.h PoorsManStateMachine.cpp
+    game_level.cpp game_level.h)
 
 target_link_libraries(example_basic
     engine
