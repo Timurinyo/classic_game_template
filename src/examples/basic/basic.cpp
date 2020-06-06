@@ -115,7 +115,7 @@ int GameMain()
     Mix_Music* music = cgt::LoadMusic("assets/examples/sounds/music.wav");
     CGT_ASSERT_MSG(music, "Failed to open the music track!");
 
-    Mix_PlayMusic(music, 1);
+    Mix_PlayMusic(music, -1);
 
     cgt::render::RenderQueue renderQueue;
     cgt::render::CameraSimpleOrtho camera;
