@@ -81,6 +81,24 @@ void ImGuiRenderStats(const float dt,cgt::render::RenderStats &renderStats)
     ImGui::End();
 }
 
+void ImGuiShowLevelWelcomeText(std::shared_ptr<Window> window,std::string &currentLevelDescription,GameStateKeeper &gameStateKeeper)
+{
+    const int imguiWindowWidth = 300;
+    const int imguiWindowHeight = 150;
+    ImGui::SetNextWindowSize({imguiWindowWidth,imguiWindowHeight});//, ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowPos({static_cast<float>(window->GetWidth() * 0.5 - imguiWindowWidth * 0.5),static_cast<float>(window->GetHeight() * 0.5 - imguiWindowHeight * 0.5)});
+    bool showWindow = true;
+    ImGui::Begin("Level description",&showWindow,ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+    ImGui::PushTextWrapPos(ImGui::GetFontSize() * 20.f);
+    ImGui::Text(currentLevelDescription.c_str());
+    ImGui::PopTextWrapPos();
+    if(ImGui::Button("Start!"))
+    {
+        gameStateKeeper.SetState(GameState::InGame);
+    }
+    ImGui::End();
+}
+
 int GameMain()
 {
     auto windowCfg = cgt::WindowConfig();
@@ -175,20 +193,7 @@ int GameMain()
 
         if (gameStateKeeper.GetState() == GameState::LevelStart)
         {
-            const int imguiWindowWidth = 300;
-            const int imguiWindowHeight = 150;
-            ImGui::SetNextWindowSize({imguiWindowWidth, imguiWindowHeight});//, ImGuiCond_FirstUseEver);
-            ImGui::SetNextWindowPos({static_cast<float>(window->GetWidth() * 0.5 - imguiWindowWidth * 0.5),static_cast<float>(window->GetHeight() * 0.5 - imguiWindowHeight * 0.5)});
-            bool showWindow = true;
-            ImGui::Begin("Level description",&showWindow,ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
-            ImGui::PushTextWrapPos(ImGui::GetFontSize() * 20.f);
-            ImGui::Text(currentLevelDescription.c_str());
-            ImGui::PopTextWrapPos();
-            if (ImGui::Button("Start!"))
-            {
-                gameStateKeeper.SetState(GameState::InGame);
-            }
-            ImGui::End();
+            ImGuiShowLevelWelcomeText(window, currentLevelDescription, gameStateKeeper);
         }
 
         renderQueue.Reset();
