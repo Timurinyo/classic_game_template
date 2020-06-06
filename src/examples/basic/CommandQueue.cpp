@@ -39,3 +39,32 @@ void CommandQueue::Reset()
     m_Commands = std::vector<Command>(m_Size, m_NullCommand);
     m_CommandIndx = 0;
 }
+
+void CommandQueue::StepForward()
+{
+    ++m_CommandIndx;
+
+    if (m_CommandIndx < m_Commands.size() && m_CommandIndx > 0)
+    {
+        while (m_Commands[m_CommandIndx].ID == CommandID::Repeat)
+        {
+            Command& currentCommand = m_Commands[m_CommandIndx];
+            if (m_CommandIndx == 0) return;
+
+            if (--currentCommand.CurrentRepeats > 0)
+            {
+                --m_CommandIndx;
+                if (m_Commands[m_CommandIndx].ID == CommandID::Repeat)
+                {
+                    ++m_Commands[m_CommandIndx].CurrentRepeats;
+                }
+            }
+            else
+            {
+                ++m_CommandIndx;
+                currentCommand.Reset();
+            }
+        }
+        
+    }
+}

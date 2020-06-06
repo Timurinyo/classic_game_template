@@ -26,6 +26,7 @@ int GameMain()
     cgt::Tilemap tiledMapRenderer(tiledMap, *render, "assets/examples/maps");
     GameGrid gameGrid(tiledMap);
 
+    bool shouldGo = false;
     BasicPlayer player("assets/examples/textures/player/char01", *render);
 
     player.Spawn(gameGrid);
@@ -106,7 +107,7 @@ int GameMain()
         tiledMapRenderer.Render(renderQueue);
 
         const Command currentCommand = commandQueue.GetCurrent();
-        if (player.GetPlayerState() == PlayerStateID::Idle && currentCommand.ID != CommandID::None)
+        if (shouldGo && player.GetPlayerState() == PlayerStateID::Idle && currentCommand.ID != CommandID::None)
         {
             player.Execute(currentCommand.ID, gameGrid);
             commandQueue.StepForward();
@@ -135,6 +136,11 @@ int GameMain()
             {
                 commandQueue.Reset();
                 player.Spawn(gameGrid);
+            }
+
+            if (ImGui::Button(shouldGo ? "Stop": "Go"))
+            {
+                shouldGo = !shouldGo;
             }
 
             ImGui::End();
