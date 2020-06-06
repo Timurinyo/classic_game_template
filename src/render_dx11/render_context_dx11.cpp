@@ -381,7 +381,7 @@ HRESULT RenderContextDX11::LoadTextureFromMemory(const u8* data, usize size, Tex
 }
 
 
-void RenderContextDX11::ImGuiImage(const TextureHandle& textrue, ImVec2 size, ImVec2 uv0, ImVec2 uv1)
+void RenderContextDX11::ImGuiImage(const TextureHandle& textrue, ImVec2 size, ImVec2 uv0, ImVec2 uv1, ImVec4 tint)
 {
     // copy-pasted from Submit
     auto GetSpriteTexture = [this](const TextureHandle& tx)
@@ -391,7 +391,7 @@ void RenderContextDX11::ImGuiImage(const TextureHandle& textrue, ImVec2 size, Im
             : m_MissingTexture.m_View.Get();
     };
 
-    ImGui::Image(GetSpriteTexture(textrue), size, uv0, uv1);
+    ImGui::Image(GetSpriteTexture(textrue), size, uv0, uv1, tint);
 }
 
 bool RenderContextDX11::ImGuiImageButton(const TextureHandle& textrue, ImVec2 size, ImVec2 uv0, ImVec2 uv1)
