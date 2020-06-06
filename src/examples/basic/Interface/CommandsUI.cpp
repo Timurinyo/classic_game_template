@@ -47,12 +47,6 @@ void CommandsUI::Tick(const float dt)
         ImGuiWindowFlags_NoMove
     );
 
-    if (ImGui::Button("Clear Command Queue"))
-    {
-        m_CommandQueue->Erase();
-    }
-    ImGui::SameLine();
-
     if (ImGui::Button("Start!"))
     {
         m_CommandQueue->SetState(State::Execution);
@@ -68,6 +62,12 @@ void CommandsUI::Tick(const float dt)
     if(ImGui::Button("Pause"))
     {
         m_CommandQueue->SetState(State::Pause);
+    }
+    ImGui::SameLine();
+
+    if(ImGui::Button("Clear Command Queue"))
+    {
+        m_CommandQueue->Erase();
     }
     ImGui::SameLine();
 
