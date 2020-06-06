@@ -30,6 +30,7 @@ enum class PlayerStateID
     Rotating,
     Moving,
     Dying,
+    ReachedGoal,
 
     Count
 };
@@ -38,16 +39,23 @@ enum class PlayerStateID
 class BasicPlayer
 {
 public:
-    BasicPlayer(const char* path, cgt::render::IRenderContext& render)
+    BasicPlayer(const char* parentFolderPath, cgt::render::IRenderContext& render)
         : m_CoordsCurrent(0,0)
     {
-        InitTextures(path, render);
+        InitTextures(parentFolderPath, render);
         InitDirectionsMap();
     };
 
     void Render(cgt::render::RenderQueue& queue);
 
+    void RenderHat(cgt::render::RenderQueue& queue);
+    void RenderAvatar(cgt::render::RenderQueue &queue);
+
     void Update(float dt);
+
+    void MoveForward(float dt);
+
+    void Rotate(float dt);
 
     void Execute(CommandID command, GameGrid& grid);
 
@@ -60,7 +68,14 @@ public:
     void Spawn(GameGrid& gameGrid);
 
 private:
-    std::unordered_map<DirectionID, cgt::render::TextureHandle> m_Textures;
+    typedef std::unordered_map<DirectionID, cgt::render::TextureHandle> DirectionTexture;
+
+    DirectionTexture m_AvatarTextures;
+
+    DirectionTexture m_MagicHatTextures;
+    DirectionTexture m_CrownTextures;
+
+    DirectionTexture* m_CurrentHatTextures = &m_MagicHatTextures;
 
     glm::vec2 m_CoordsCurrent;
     glm::vec2 m_CoordsPrev;

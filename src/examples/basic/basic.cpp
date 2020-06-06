@@ -26,7 +26,7 @@ int GameMain()
     cgt::Tilemap tiledMapRenderer(tiledMap, *render, "assets/examples/maps");
     GameGrid gameGrid(tiledMap);
 
-    BasicPlayer player("assets/examples/textures/player/char01", *render);
+    BasicPlayer player("assets/examples/textures/player", *render);
 
     player.Spawn(gameGrid);
 
