@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.2" tiledversion="1.3.5" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="87" tileheight="87" infinite="0" nextlayerid="4" nextobjectid="1">
+ <properties>
+  <property name="DESCRIPTION" value="Welcome to CodingWitch game! Create program to move witch from start to finish avoiding water and other obstacles. Use W,A,S,D to move the camera. Good luck!"/>
+ </properties>
  <tileset firstgid="1" source="sample_iso.tsx"/>
  <layer id="1" name="BASE" width="10" height="10">
   <properties>

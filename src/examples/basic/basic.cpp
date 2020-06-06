@@ -81,7 +81,7 @@ void ImGuiRenderStats(const float dt,cgt::render::RenderStats &renderStats)
     ImGui::End();
 }
 
-void ImGuiShowLevelWelcomeText(std::shared_ptr<Window> window,std::string &currentLevelDescription,GameStateKeeper &gameStateKeeper)
+void ImGuiShowLevelWelcomeText(std::shared_ptr<cgt::Window> window,std::string &currentLevelDescription,GameStateKeeper &gameStateKeeper)
 {
     const int imguiWindowWidth = 300;
     const int imguiWindowHeight = 150;
@@ -114,7 +114,7 @@ int GameMain()
     camera.windowHeight = window->GetHeight();
     camera.pixelsPerUnit = 87.0f;
 
-    auto tiledMap = cgt::LoadTiledMap("assets/examples/maps/level_02.tmx");
+    auto tiledMap = cgt::LoadTiledMap("assets/examples/maps/level_01.tmx");
     tmx_property* descriptionProperty = tmx_get_property(tiledMap->properties, "DESCRIPTION");
     std::string currentLevelDescription;
     if (descriptionProperty)
