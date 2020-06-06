@@ -11,14 +11,19 @@ CommandsUI::CommandsUI(std::shared_ptr<cgt::render::IRenderContext> render, Comm
     m_AvailableCommands = {
         { CommandID::MoveForward, "Move Forward" },
         { CommandID::TurnLeft, "Turn Left" },
-        { CommandID::TurnRight, "Turn Right" }
+        { CommandID::TurnRight, "Turn Right" },
+        { CommandID::Repeat, "x2", 2, 2 },
+        { CommandID::Repeat, "x3", 3, 3 },
+        { CommandID::Repeat, "x4", 4, 4 },
+        { CommandID::Repeat, "x5", 5, 5 },
     };
 
     m_CommandUIPropsMap = {
-        {CommandID::None, {movesTexture, {0.6, 0}, {0.8, 0.5}}},
-        {CommandID::MoveForward, {movesTexture, {0, 0}, {0.2, 0.5}}},
-        {CommandID::TurnLeft, {movesTexture, {0.4, 0}, {0.6, 0.5}}},
-        {CommandID::TurnRight, {movesTexture, {0.2, 0}, {0.4, 0.5}}},
+        { CommandID::None,        { movesTexture, {0.6, 0.0}, {0.8, 0.5} } },
+        { CommandID::MoveForward, { movesTexture, {0.0, 0.0}, {0.2, 0.5} } },
+        { CommandID::TurnLeft,    { movesTexture, {0.4, 0.0}, {0.6, 0.5} } },
+        { CommandID::TurnRight,   { movesTexture, {0.2, 0.0}, {0.4, 0.5} } },
+        { CommandID::Repeat,      { movesTexture, {0.0, 0.5}, {0.2, 1.0} } },
     };
 }
 
@@ -63,7 +68,7 @@ void CommandsUI::DrawCommandQueue()
 
         ImGui::PushID(i);
 
-        DrawCommandImage(command.ID);
+        DrawCommandImage(command);
         if (i < m_CommandQueue->GetAll().size() - 1)
         {
             ImGui::SameLine();
@@ -82,6 +87,8 @@ void CommandsUI::DrawCommandQueue()
 
         ImGui::PopID();
     }
+
+    ImGui::Text("Current command idx: %d", m_CommandQueue->GetCurrentIdx());
 }
 
 void CommandsUI::DrawCommandSelectButtons()
@@ -91,12 +98,12 @@ void CommandsUI::DrawCommandSelectButtons()
         const Command& command = m_AvailableCommands[i];
 
         ImGui::PushID(0xf0000 | i);
-        DrawCommandImageButton(command.ID);
+        DrawCommandImageButton(command);
 
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
         {
             ImGui::SetDragDropPayload("Command_ptr", &command, sizeof(command));
-            DrawCommandImage(command.ID);
+            DrawCommandImage(command);
             ImGui::EndDragDropSource();
         }
 
@@ -114,14 +121,31 @@ void CommandsUI::DrawCommandSelectButtons()
     }
 }
 
-void CommandsUI::DrawCommandImage(CommandID id)
+void CommandsUI::DrawCommandImage(const Command& command)
 {
-    const CommandUIProps& props = GetCommandUIProps(id);
+    const CommandUIProps& props = GetCommandUIProps(command);
     m_Render->ImGuiImage(props.Texture, props.Size, props.UV0, props.UV1);
 }
 
-bool CommandsUI::DrawCommandImageButton(CommandID id)
+bool CommandsUI::DrawCommandImageButton(const Command& command)
 {
-    const CommandUIProps& props = GetCommandUIProps(id);
+    const CommandUIProps& props = GetCommandUIProps(command);
     return m_Render->ImGuiImageButton(props.Texture, props.Size, props.UV0, props.UV1);
+}
+
+CommandUIProps CommandsUI::GetCommandUIProps(const Command& command) const
+{
+    const CommandUIProps& props = m_CommandUIPropsMap.at(command.ID);
+    if (command.ID != CommandID::Repeat)
+    {
+        return props;
+    }
+    float uvDeltaX = props.UV1.x - props.UV0.x;
+    if (!command.CurrentRepeats)
+    {
+        return { props.Texture, {0.8, 0.0}, {1.0, 0.5}, props.Size };
+    }
+    ImVec2 UV0(uvDeltaX * (command.CurrentRepeats - 1), props.UV0.y);
+    ImVec2 UV1(uvDeltaX *  command.CurrentRepeats     , props.UV1.y);
+    return { props.Texture, UV0, UV1, props.Size };
 }

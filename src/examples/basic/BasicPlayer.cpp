@@ -246,6 +246,8 @@ void BasicPlayer::Spawn(GameGrid& gameGrid)
 
     m_CurrentAngle = m_CurrentAngleDefault;
 
+    m_DirectionCurrent = m_DirectionDefault;
+
 }
 
 void BasicPlayer::InitTextures(const char* parentFolderPath, cgt::render::IRenderContext& render)

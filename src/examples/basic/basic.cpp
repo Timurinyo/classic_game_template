@@ -52,6 +52,7 @@ int GameMain()
     cgt::Tilemap tiledMapRenderer(tiledMap, *render, "assets/examples/maps");
     GameGrid gameGrid(tiledMap);
 
+    bool shouldGo = false;
     BasicPlayer player("assets/examples/textures/player", *render);
 
     player.Spawn(gameGrid);
@@ -132,6 +133,7 @@ int GameMain()
         tiledMapRenderer.Render(renderQueue);
 
         const Command currentCommand = commandQueue.GetCurrent();
+
         if (player.GetPlayerState() == PlayerStateID::Idle && commandQueue.GetState() == State::Execution)
         {
             player.Execute(currentCommand.ID, gameGrid);
@@ -157,7 +159,6 @@ int GameMain()
         player.Render(renderQueue);
 
         ImguiDebugRenderPlayerStats(player, gameGrid, commandQueue);
-
 
         renderStats = render->Submit(renderQueue, camera);
     }

@@ -31,10 +31,10 @@ public:
 private:
     void DrawCommandQueue();
     void DrawCommandSelectButtons();
-    void DrawCommandImage(CommandID id);
-    bool DrawCommandImageButton(CommandID id);
+    void DrawCommandImage(const Command& command);
+    bool DrawCommandImageButton(const Command& command);
 
-    const CommandUIProps& GetCommandUIProps(CommandID id) const { return m_CommandUIPropsMap.at(id); }
+    CommandUIProps GetCommandUIProps(const Command& command) const;
 
     std::vector<Command> m_AvailableCommands = {};
 
