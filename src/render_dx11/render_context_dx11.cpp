@@ -397,7 +397,20 @@ void RenderContextDX11::ImGuiImage(const TextureHandle& textrue, ImVec2 size, Im
     ImGui::Image(GetSpriteTexture(textrue), size, uv0, uv1, tint);
 }
 
-bool RenderContextDX11::ImGuiImageButton(const TextureHandle& textrue, ImVec2 size, ImVec2 uv0, ImVec2 uv1)
+static void ShowHelpMarker(const char* desc)
+{
+    //ImGui::TextDisabled("(?)");
+    if(ImGui::IsItemHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::PushTextWrapPos(450.0f);
+        ImGui::TextUnformatted(desc);
+        ImGui::PopTextWrapPos();
+        ImGui::EndTooltip();
+    }
+}
+
+bool RenderContextDX11::ImGuiImageButton(const TextureHandle& textrue, ImVec2 size, ImVec2 uv0, ImVec2 uv1, const char* tooltip)
 {
     // copy-pasted from Submit
     auto GetSpriteTexture = [this](const TextureHandle& tx)
@@ -407,7 +420,10 @@ bool RenderContextDX11::ImGuiImageButton(const TextureHandle& textrue, ImVec2 si
             : m_MissingTexture.m_View.Get();
     };
 
-    return ImGui::ImageButton(GetSpriteTexture(textrue), size, uv0, uv1);
+    bool buttonState = ImGui::ImageButton(GetSpriteTexture(textrue), size, uv0, uv1);
+    ImGui::SameLine(); ShowHelpMarker(tooltip);
+
+    return buttonState;
 }
 
 }

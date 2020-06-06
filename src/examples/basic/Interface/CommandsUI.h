@@ -17,6 +17,7 @@ struct CommandUIProps
     cgt::render::TextureHandle Texture;
     ImVec2 UV0 = { 0, 0 };
     ImVec2 UV1 = { 1, 1 };
+    const char* Description; //To show as tooltips
     ImVec2 Size = { 64, 64 };
     // tint/border color
 };

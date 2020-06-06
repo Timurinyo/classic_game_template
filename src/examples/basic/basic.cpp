@@ -7,6 +7,7 @@
 #include "Interface/CommandsUI.h"
 
 #include <examples/basic/BasicPlayer.h>
+#include <examples/basic/PoorsManStateMachine.h>
 
 void ImguiDebugRenderPlayerStats(BasicPlayer& player, GameGrid& gameGrid, CommandQueue& commandQueue)
 {
@@ -67,10 +68,10 @@ int GameMain()
 
     auto tileset = Tileset::LoadFrom(*render, tiledMap, tiledMap->ts_head->tileset, "assets/examples/maps");
 
-    bool shouldGo = false;
     BasicPlayer player("assets/examples/textures/player", *render);
-
     player.Spawn(*gameGrid);
+
+    GameStateKeeper gameStateKeeper;
 
     CommandQueue commandQueue;
     CommandsUI commandsInterface(render, &commandQueue);
@@ -136,7 +137,6 @@ int GameMain()
             ImGui::Text("Frame time: %.2fms", dt * 1000.0f);
             ImGui::Text("Sprites: %d", renderStats.spriteCount);
             ImGui::Text("Drawcalls: %d", renderStats.drawcallCount);
-            //ImGui::Text("Drawcalls: %d", renderStats.drawcallCount);
             ImGui::End();
         }
 
@@ -167,6 +167,20 @@ int GameMain()
             commandQueue.Reset();
             player.Spawn(*gameGrid);
             gameGrid->UndiscoverAllTiles();
+        }
+        else if (player.GetPlayerState() == PlayerStateID::ReachedGoal)
+        {
+            const int imguiWindowWidth = 180;
+            const int imguiWindowHeight = 60;
+            ImGui::SetNextWindowSize({imguiWindowWidth, imguiWindowHeight});//, ImGuiCond_FirstUseEver);
+            ImGui::SetNextWindowPos({static_cast<float>(window->GetWidth() * 0.5 - imguiWindowWidth * 0.5), static_cast<float>(window->GetHeight() * 0.5 - imguiWindowHeight * 0.5)});
+            bool showWindow = true;
+            ImGui::Begin("You passed the level!", &showWindow, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+            if (ImGui::Button("Next!"))
+            {
+                //load next level
+            }
+            ImGui::End();
         }
 
         player.Update(dt);
