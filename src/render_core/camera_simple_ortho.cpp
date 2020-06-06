@@ -20,9 +20,6 @@ glm::mat4 CameraSimpleOrtho::GetViewProjection() const
 
     glm::vec2 alignedPosition = position - centerOffset;
 
-    alignedPosition.x = alignedPosition.x - std::fmodf(alignedPosition.x, unitsPerPixel);
-    alignedPosition.y = alignedPosition.y - std::fmodf(alignedPosition.y, unitsPerPixel);
-
     const glm::mat4 view = glm::lookAt(
         glm::vec3(alignedPosition, -1.0f),
         glm::vec3(alignedPosition, 0.0f),

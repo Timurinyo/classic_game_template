@@ -41,6 +41,14 @@ private:
 
     HRESULT LoadTextureFromMemory(const u8* data, usize size, TextureData& outData);
 
+    struct FrameConstants
+    {
+        glm::mat4 viewProjection;
+        glm::vec2 outputResolution;
+
+        glm::vec2 padding[9];
+    };
+
     std::shared_ptr<Window> m_Window;
 
     ComPtr<ID3D11Device> m_Device;
