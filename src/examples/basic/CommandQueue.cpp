@@ -3,15 +3,17 @@
 CommandQueue::CommandQueue(int size /*= 5*/)
     : m_Size(size)
 {
-    Reset();
+    Erase();
 }
 
-const Command& CommandQueue::GetCurrent() const
+const Command& CommandQueue::GetCurrent()
 {
     if (m_CommandIndx < m_Commands.size())
     {
         return m_Commands[m_CommandIndx];
     }
+
+    m_CurrentState = State::Finished;
     return m_NullCommand;
 }
 
@@ -34,8 +36,17 @@ void CommandQueue::Set(int indx, const Command& command)
     }
 }
 
-void CommandQueue::Reset()
+void CommandQueue::Erase()
 {
     m_Commands = std::vector<Command>(m_Size, m_NullCommand);
     m_CommandIndx = 0;
+
+    m_CurrentState = State::Stop;
+}
+
+void CommandQueue::Reset()
+{
+    m_CommandIndx = 0;
+
+    m_CurrentState = State::Stop;
 }

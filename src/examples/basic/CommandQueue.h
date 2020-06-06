@@ -6,6 +6,14 @@
 #include <engine/external_libs.h>
 #include <engine/system.h>
 
+enum class State
+{
+    Execution,
+    Pause,
+    Stop,
+    Finished
+};
+
 enum class CommandID
 {
     None,
@@ -27,13 +35,17 @@ class CommandQueue
 public:
     CommandQueue(int size = 20);
     const std::vector<Command>& GetAll() const { return m_Commands; }
-    const Command& GetCurrent() const;
+    const Command& GetCurrent();
     const Command& Get(int indx) const;
 
     void Set(int indx, const Command& command);
-    void Reset();
+    void Erase();
 
+    void Reset();
     void StepForward() { ++m_CommandIndx; }
+
+    State GetState() const { return m_CurrentState; };
+    void SetState(State newState) { m_CurrentState = newState; };
 
 private:
     int m_CommandIndx = 0;
@@ -42,4 +54,6 @@ private:
     std::vector<Command> m_Commands;
 
     const Command m_NullCommand = { CommandID::None, "NULL" };
+
+    State m_CurrentState = State::Stop;
 };

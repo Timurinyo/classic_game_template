@@ -11,6 +11,12 @@
 
 class GameGrid;
 
+enum class HatType
+{
+    WizardHat,
+    Crown,
+};
+
 enum DirectionID
 {
     S = 0,
@@ -30,6 +36,7 @@ enum class PlayerStateID
     Rotating,
     Moving,
     Dying,
+    Dead,
     ReachedGoal,
 
     Count
@@ -57,9 +64,12 @@ public:
 
     void Rotate(float dt);
 
-    void Execute(CommandID command, GameGrid& grid);
+    void Die(const float dt);
+
+    void Execute(CommandID command,GameGrid& grid);
 
     PlayerStateID GetPlayerState() const { return m_PlayerState; }
+    void SetPlayerState(PlayerStateID playerState) {  m_PlayerState = playerState; }
 
     glm::vec2 GetPosition() const { return m_CoordsCurrent; };
 
@@ -75,11 +85,16 @@ private:
     DirectionTexture m_MagicHatTextures;
     DirectionTexture m_CrownTextures;
 
-    DirectionTexture* m_CurrentHatTextures = &m_MagicHatTextures;
+    HatType m_CurrentHatType = HatType::WizardHat;
 
     glm::vec2 m_CoordsCurrent;
     glm::vec2 m_CoordsPrev;
     glm::vec2 m_CoordsNext;
+
+    const float m_CurrentAngleDefault = 45;
+    float m_CurrentAngle = m_CurrentAngleDefault;
+
+    glm::vec4 m_ColorTint;
 
     DirectionID m_DirectionCurrent = DirectionID::SW;
     DirectionID m_DirectionPrev = DirectionID::S;
@@ -91,9 +106,11 @@ private:
     float m_RotationStep = 2;
 
     float m_MoveTimer, m_RotateTimer;
+    float m_DieTimer = 0;
 
     const float m_TimePerMove = 1.f;
     const float m_TimePerRotation = 1.f;
+    const float m_TimePerDeath = 1.f;
 
     PlayerStateID m_PlayerState = PlayerStateID::Idle;
 

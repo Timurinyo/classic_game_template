@@ -7,6 +7,32 @@
 
 #include <examples/basic/BasicPlayer.h>
 
+void ImguiDebugRenderPlayerStats(BasicPlayer& player, GameGrid& gameGrid, CommandQueue& commandQueue)
+{
+    const glm::vec2 playerPosition = player.GetPosition();
+    const GameTile currentTile = gameGrid.At(playerPosition.x,-playerPosition.y);
+
+    ImGui::SetNextWindowSize({300,100},ImGuiCond_FirstUseEver);
+    ImGui::Begin("Player Stats");
+
+    ImGui::Text("x: %f y: %f",playerPosition.x,playerPosition.y);
+    ImGui::Text("Player State: %s",PlayerStateToString(player.GetPlayerState()));
+    ImGui::Text("Current tile: %d",static_cast<int>(currentTile.type));
+
+    if(player.GetPlayerState() == PlayerStateID::Idle && currentTile.type == GameTile::Type::Goal)
+    {
+        ImGui::Text("You Won!");
+    }
+
+    if(player.GetPlayerState() == PlayerStateID::Dying && ImGui::Button("Respawn"))
+    {
+        commandQueue.Reset();
+        player.Spawn(gameGrid);
+    }
+
+    ImGui::End();
+}
+
 int GameMain()
 {
     auto windowCfg = cgt::WindowConfig();
@@ -106,39 +132,32 @@ int GameMain()
         tiledMapRenderer.Render(renderQueue);
 
         const Command currentCommand = commandQueue.GetCurrent();
-        if (player.GetPlayerState() == PlayerStateID::Idle && currentCommand.ID != CommandID::None)
+        if (player.GetPlayerState() == PlayerStateID::Idle && commandQueue.GetState() == State::Execution)
         {
             player.Execute(currentCommand.ID, gameGrid);
             commandQueue.StepForward();
         }
+        else if(commandQueue.GetState() == State::Finished && player.GetPlayerState() != PlayerStateID::ReachedGoal)
+        {
+            commandQueue.Reset();
+            player.SetPlayerState(PlayerStateID::Dying);
+        }
+        else if (player.GetPlayerState() == PlayerStateID::Dead)
+        {
+            player.Spawn(gameGrid);
+        }
 
         player.Update(dt);
+
+        if (player.GetPlayerState() == PlayerStateID::Dying)
+        {
+            commandQueue.Reset();
+        }
+
         player.Render(renderQueue);
 
-        {
-            const glm::vec2 playerPosition = player.GetPosition();
-            const GameTile currentTile = gameGrid.At(playerPosition.x, -playerPosition.y);
+        ImguiDebugRenderPlayerStats(player, gameGrid, commandQueue);
 
-            ImGui::SetNextWindowSize({ 300, 100 }, ImGuiCond_FirstUseEver);
-            ImGui::Begin("Player Stats");
-            
-            ImGui::Text("x: %f y: %f", playerPosition.x, playerPosition.y);
-            ImGui::Text("Player State: %s", PlayerStateToString(player.GetPlayerState()));
-            ImGui::Text("Current tile: %d", static_cast<int>(currentTile.type));
-            
-            if (player.GetPlayerState() == PlayerStateID::Idle && currentTile.type == GameTile::Type::Goal)
-            {
-                ImGui::Text("You Won!");
-            }
-
-            if (player.GetPlayerState() == PlayerStateID::Dying && ImGui::Button("Respawn"))
-            {
-                commandQueue.Reset();
-                player.Spawn(gameGrid);
-            }
-
-            ImGui::End();
-        }
 
         renderStats = render->Submit(renderQueue, camera);
     }

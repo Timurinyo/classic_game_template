@@ -24,7 +24,7 @@ CommandsUI::CommandsUI(std::shared_ptr<cgt::render::IRenderContext> render, Comm
 
 void CommandsUI::Tick(const float dt)
 {
-    ImGui::SetNextWindowSize({ 600, 200 }, ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize({ 600, 250 }, ImGuiCond_FirstUseEver);
     ImGui::Begin("Commands");
 
     DrawCommandQueue();
@@ -34,6 +34,21 @@ void CommandsUI::Tick(const float dt)
     if (ImGui::Button("Step"))
     {
         m_CommandQueue->StepForward();
+    }
+
+    if (ImGui::Button("Start!"))
+    {
+        m_CommandQueue->SetState(State::Execution);
+    }
+
+    if (ImGui::Button("Stop"))
+    {
+        m_CommandQueue->SetState(State::Stop);
+    }
+
+    if(ImGui::Button("Pause"))
+    {
+        m_CommandQueue->SetState(State::Pause);
     }
 
     ImGui::End();
@@ -95,7 +110,7 @@ void CommandsUI::DrawCommandSelectButtons()
 
     if (ImGui::Button("Clear Command Queue"))
     {
-        m_CommandQueue->Reset();
+        m_CommandQueue->Erase();
     }
 }
 
