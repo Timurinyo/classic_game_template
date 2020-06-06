@@ -66,7 +66,9 @@ public:
 
     void Die(const float dt);
 
-    void Execute(CommandID command,GameGrid& grid);
+    void Execute(CommandID command, GameGrid& grid);
+    GameTile::Type GetViewedTile(GameGrid& grid) const { return grid.At(m_CoordsCurrent.x + m_DirectionsMap[m_DirectionCurrent].x, -m_CoordsCurrent.y - m_DirectionsMap[m_DirectionCurrent].y).type; }
+    GameTile::Type GetViewedTileNext(GameGrid& grid) const { return grid.At(m_CoordsNext.x + m_DirectionsMap[m_DirectionNext].x, -m_CoordsNext.y - m_DirectionsMap[m_DirectionNext].y).type; }
 
     PlayerStateID GetPlayerState() const { return m_PlayerState; }
     void SetPlayerState(PlayerStateID playerState) {  m_PlayerState = playerState; }
@@ -87,9 +89,9 @@ private:
 
     HatType m_CurrentHatType = HatType::WizardHat;
 
-    glm::vec2 m_CoordsCurrent;
-    glm::vec2 m_CoordsPrev;
-    glm::vec2 m_CoordsNext;
+    glm::vec2 m_CoordsCurrent{ 0, 0 };
+    glm::vec2 m_CoordsPrev{ 0, 0 };
+    glm::vec2 m_CoordsNext{ 0, 0 };
 
     const float m_CurrentAngleDefault = 45;
     float m_CurrentAngle = m_CurrentAngleDefault;

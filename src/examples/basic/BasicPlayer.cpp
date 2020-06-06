@@ -242,6 +242,7 @@ void BasicPlayer::Spawn(GameGrid& gameGrid)
     glm::vec2 tempCoords = gameGrid.GetStartTileCoords();
 
     m_CoordsCurrent = glm::vec2(tempCoords.x, tempCoords.y * -1.f);
+    m_CoordsNext = m_CoordsCurrent;
 
     m_IsPlayerSpawned = true;
 

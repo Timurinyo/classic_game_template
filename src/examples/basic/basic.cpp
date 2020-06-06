@@ -175,8 +175,10 @@ int GameMain()
 
             if (player.GetPlayerState() == PlayerStateID::Idle && commandQueue.GetState() == State::Execution)
             {
+                GameTile::Type previousViewedTile = player.GetViewedTile(*gameGrid);
                 player.Execute(currentCommand.ID, *gameGrid);
-                commandQueue.StepForward();
+                GameTile::Type currentViewedTile = player.GetViewedTileNext(*gameGrid);
+                commandQueue.StepForward(previousViewedTile, currentViewedTile);
             }
             else if(commandQueue.GetState() == State::Finished && player.GetPlayerState() != PlayerStateID::ReachedGoal)
             {
