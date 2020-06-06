@@ -209,7 +209,7 @@ std::shared_ptr<RenderContextDX11> RenderContextDX11::BuildWithConfig(RenderConf
     context->m_FrameConstants = CreateBuffer(
         context->m_Device.Get(),
         nullptr,
-        sizeof(glm::mat4),
+        sizeof(FrameConstants),
         D3D11_BIND_CONSTANT_BUFFER,
         D3D11_USAGE_DYNAMIC,
         D3D11_CPU_ACCESS_WRITE);
@@ -260,8 +260,11 @@ RenderStats RenderContextDX11::Submit(RenderQueue& queue, const ICamera& camera)
     m_Context->IASetVertexBuffers(0, SDL_arraysize(buffers), buffers, strides, offsets);
 
     m_Context->VSSetShader(m_VertexShader.Get(), nullptr, 0);
-    glm::mat4 viewProjection = camera.GetViewProjection();
-    UpdateBuffer(m_Context.Get(), m_FrameConstants.Get(), viewProjection);
+
+    FrameConstants frameConstants;
+    frameConstants.viewProjection = camera.GetViewProjection();
+    frameConstants.outputResolution = glm::vec2(m_Window->GetWidth(), m_Window->GetHeight());
+    UpdateBuffer(m_Context.Get(), m_FrameConstants.Get(), frameConstants);
     m_Context->VSSetConstantBuffers(0, 1, m_FrameConstants.GetAddressOf());
 
     m_Context->PSSetShader(m_PixelShader.Get(), nullptr, 0);
