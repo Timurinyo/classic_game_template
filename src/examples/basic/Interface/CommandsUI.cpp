@@ -34,27 +34,41 @@ CommandsUI::CommandsUI(std::shared_ptr<cgt::render::IRenderContext> render,
 void CommandsUI::Tick(const float dt)
 {
     DrawCommandQueue();
-
-    ImGui::SetNextWindowSize({ 600, 250 }, ImGuiCond_FirstUseEver);
-    ImGui::Begin("Commands");
-
-    ImGui::Separator();
     DrawCommandSelectButtons();
+    
+    bool windowOpen = true;
+    ImGui::SetNextWindowPos({ 90, 90 });
+    ImGui::SetNextWindowSize({ 310, 22 });
+    ImGui::Begin("Controls", &windowOpen,
+        ImGuiWindowFlags_NoTitleBar |
+        ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoScrollbar |
+        ImGuiWindowFlags_NoMove
+    );
+
+    if (ImGui::Button("Clear Command Queue"))
+    {
+        m_CommandQueue->Erase();
+    }
+    ImGui::SameLine();
 
     if (ImGui::Button("Start!"))
     {
         m_CommandQueue->SetState(State::Execution);
     }
+    ImGui::SameLine();
 
     if (ImGui::Button("Stop"))
     {
         m_CommandQueue->SetState(State::NeedRestart);
     }
+    ImGui::SameLine();
 
     if(ImGui::Button("Pause"))
     {
         m_CommandQueue->SetState(State::Pause);
     }
+    ImGui::SameLine();
 
     ImGui::End();
 }
@@ -62,9 +76,15 @@ void CommandsUI::Tick(const float dt)
 void CommandsUI::DrawCommandQueue()
 {
     bool windowOpen = true;
-    ImGui::SetNextWindowSize({ 90, m_WindowSize.y });
-    ImGui::SetNextWindowPos({ m_WindowSize.x - 90, 0 });
-    ImGui::Begin("Command Queue", &windowOpen, ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+    float queueWidth = 90;
+    ImGui::SetNextWindowSize({ queueWidth, m_WindowSize.y });
+    ImGui::SetNextWindowPos({ 0, 0 });
+    ImGui::Begin("Command Queue", &windowOpen,
+        ImGuiWindowFlags_AlwaysVerticalScrollbar |
+        ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoTitleBar |
+        ImGuiWindowFlags_NoResize
+    );
     bool shouldHighlight = false;
     for(int i = 0; i < m_CommandQueue->GetAll().size(); ++i)
     {
@@ -102,6 +122,15 @@ void CommandsUI::DrawCommandQueue()
 
 void CommandsUI::DrawCommandSelectButtons()
 {
+    bool windowOpen = true;
+    ImGui::SetNextWindowSize({ static_cast<float>(82 * m_AvailableCommands.size()), 90 });
+    ImGui::SetNextWindowPos({ 90, 0 });
+    ImGui::Begin("Commands", &windowOpen,
+        ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoTitleBar |
+        ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_AlwaysAutoResize
+    );
     for (int i = 0; i < m_AvailableCommands.size(); ++i)
     {
         const Command& command = m_AvailableCommands[i];
@@ -115,19 +144,12 @@ void CommandsUI::DrawCommandSelectButtons()
             DrawCommandImage(command);
             ImGui::EndDragDropSource();
         }
-
-        if (i < m_AvailableCommands.size() - 1)
-        {
-            ImGui::SameLine();
-        }
+        ImGui::SameLine();
 
         ImGui::PopID();
     }
 
-    if (ImGui::Button("Clear Command Queue"))
-    {
-        m_CommandQueue->Erase();
-    }
+    ImGui::End();
 }
 
 void CommandsUI::DrawCommandImage(const Command& command, bool isHighlighted)
