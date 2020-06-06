@@ -11,7 +11,8 @@ enum class State
     Execution,
     Pause,
     Stop,
-    Finished
+    Finished,
+    NeedRestart
 };
 
 enum class CommandID
