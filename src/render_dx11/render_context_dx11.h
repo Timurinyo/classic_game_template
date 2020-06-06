@@ -29,7 +29,7 @@ public:
 
     void NewFrame() override;
 
-    virtual void ImGuiImage(const TextureHandle& textrue, ImVec2 size, ImVec2 uv0, ImVec2 uv1, ImVec4 tint) override;
+    virtual void ImGuiImage(const TextureHandle& textrue, ImVec2 size, ImVec2 uv0, ImVec2 uv1, ImVec4 tint, const char* tooltip) override;
     virtual bool ImGuiImageButton(const TextureHandle& textrue, ImVec2 size, ImVec2 uv0, ImVec2 uv1, const char* tooltip) override;
 
     ~RenderContextDX11() override;

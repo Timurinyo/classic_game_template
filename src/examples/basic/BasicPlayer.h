@@ -67,8 +67,8 @@ public:
     void Die(const float dt);
 
     void Execute(CommandID command, GameGrid& grid);
-    GameTile::Type GetViewedTile(GameGrid& grid) const { return grid.At(m_CoordsCurrent.x + m_DirectionsMap[m_DirectionCurrent].x, -m_CoordsCurrent.y - m_DirectionsMap[m_DirectionCurrent].y).type; }
-    GameTile::Type GetViewedTileNext(GameGrid& grid) const { return grid.At(m_CoordsNext.x + m_DirectionsMap[m_DirectionNext].x, -m_CoordsNext.y - m_DirectionsMap[m_DirectionNext].y).type; }
+    GameTile::Type GetViewedTile(GameGrid& grid) const;
+    GameTile::Type GetViewedTileNext(GameGrid& grid) const;
 
     PlayerStateID GetPlayerState() const { return m_PlayerState; }
     void SetPlayerState(PlayerStateID playerState) {  m_PlayerState = playerState; }
@@ -98,7 +98,7 @@ private:
 
     glm::vec4 m_ColorTint;
 
-    const DirectionID m_DirectionDefault = DirectionID::SW;
+    const DirectionID m_DirectionDefault = DirectionID::ES;
 
     DirectionID m_DirectionCurrent = DirectionID::SW;
     DirectionID m_DirectionPrev = DirectionID::S;
@@ -112,8 +112,8 @@ private:
     float m_MoveTimer, m_RotateTimer;
     float m_DieTimer = 0;
 
-    const float m_TimePerMove = 1.f;
-    const float m_TimePerRotation = 1.f;
+    const float m_TimePerMove = 0.75f;
+    const float m_TimePerRotation = 0.5f;
     const float m_TimePerDeath = 1.f;
 
     PlayerStateID m_PlayerState = PlayerStateID::Idle;

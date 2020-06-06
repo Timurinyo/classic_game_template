@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.2" tiledversion="1.3.5" name="sample_iso" tilewidth="87" tileheight="87" tilecount="225" columns="11">
+<tileset version="1.2" tiledversion="1.3.5" name="sample_iso" tilewidth="87" tileheight="87" tilecount="55" columns="11">
  <grid orientation="isometric" width="87" height="87"/>
  <image source="../textures/tiles.png" width="1024" height="512"/>
  <tile id="0" type="PICKUP">
@@ -39,6 +39,7 @@
  </tile>
  <tile id="7" type="GROUND">
   <properties>
+   <property name="DISCOVERED" type="bool" value="false"/>
    <property name="VARIANT" type="int" value="0"/>
   </properties>
  </tile>

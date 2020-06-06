@@ -23,4 +23,6 @@ private:
     std::vector<GameTile> m_Grid;
 
     glm::vec2 m_StartTileCoords;
+
+    bool m_InitialyDiscovered = false;
 };
