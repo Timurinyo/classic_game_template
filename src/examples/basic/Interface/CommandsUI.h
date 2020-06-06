@@ -31,7 +31,7 @@ public:
 private:
     void DrawCommandQueue();
     void DrawCommandSelectButtons();
-    void DrawCommandImage(const Command& command);
+    void DrawCommandImage(const Command& command, bool isHighlighted = false);
     bool DrawCommandImageButton(const Command& command);
 
     CommandUIProps GetCommandUIProps(const Command& command) const;
