@@ -22,6 +22,7 @@ enum class CommandID
     TurnLeft,
     TurnRight,
     Repeat,
+    DoWhile,
 };
 
 struct Command

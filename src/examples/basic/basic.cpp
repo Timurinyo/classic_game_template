@@ -157,12 +157,14 @@ int GameMain()
         }
         else if(commandQueue.GetState() == State::Finished && player.GetPlayerState() != PlayerStateID::ReachedGoal)
         {
-            player.SetPlayerState(PlayerStateID::Dying);
+            commandQueue.Reset();
+            commandQueue.SetState(State::Execution);
         }
         else if (player.GetPlayerState() == PlayerStateID::Dead || commandQueue.GetState() == State::NeedRestart)
         {
             commandQueue.Reset();
             player.Spawn(*gameGrid);
+            gameGrid->UndiscoverAllTiles();
         }
 
         player.Update(dt);

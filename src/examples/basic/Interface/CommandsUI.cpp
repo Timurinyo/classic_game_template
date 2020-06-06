@@ -16,14 +16,16 @@ CommandsUI::CommandsUI(std::shared_ptr<cgt::render::IRenderContext> render, Comm
         { CommandID::Repeat, "x3", 3, 3 },
         { CommandID::Repeat, "x4", 4, 4 },
         { CommandID::Repeat, "x5", 5, 5 },
+        { CommandID::DoWhile, "Do While" },
     };
 
     m_CommandUIPropsMap = {
-        { CommandID::None,        { movesTexture, {0.6, 0.0}, {0.8, 0.5} } },
-        { CommandID::MoveForward, { movesTexture, {0.0, 0.0}, {0.2, 0.5} } },
-        { CommandID::TurnLeft,    { movesTexture, {0.4, 0.0}, {0.6, 0.5} } },
-        { CommandID::TurnRight,   { movesTexture, {0.2, 0.0}, {0.4, 0.5} } },
-        { CommandID::Repeat,      { movesTexture, {0.0, 0.5}, {0.2, 1.0} } },
+        { CommandID::None,        { movesTexture, {0.3, 0.00}, {0.4, 0.25} } },
+        { CommandID::MoveForward, { movesTexture, {0.0, 0.00}, {0.1, 0.25} } },
+        { CommandID::TurnLeft,    { movesTexture, {0.2, 0.00}, {0.3, 0.25} } },
+        { CommandID::TurnRight,   { movesTexture, {0.1, 0.00}, {0.2, 0.25} } },
+        { CommandID::Repeat,      { movesTexture, {0.0, 0.25}, {0.1, 0.50} } },
+        { CommandID::DoWhile,     { movesTexture, {0.5, 0.00}, {0.6, 0.25} } },
     };
 }
 
@@ -61,14 +63,23 @@ void CommandsUI::Tick(const float dt)
 
 void CommandsUI::DrawCommandQueue()
 {
-    const Command& current = m_CommandQueue->GetCurrent();
+    bool shouldHighlight = false;
     for(int i = 0; i < m_CommandQueue->GetAll().size(); ++i)
     {
         const Command command = m_CommandQueue->Get(i);
 
         ImGui::PushID(i);
 
-        DrawCommandImage(command);
+        if (i == m_CommandQueue->GetCurrentIdx())
+        {
+            shouldHighlight = true;
+        }
+        else if (command.ID != CommandID::Repeat)
+        {
+            shouldHighlight = false;
+        }
+
+        DrawCommandImage(command, shouldHighlight);
         if (i < m_CommandQueue->GetAll().size() - 1)
         {
             ImGui::SameLine();
@@ -121,10 +132,17 @@ void CommandsUI::DrawCommandSelectButtons()
     }
 }
 
-void CommandsUI::DrawCommandImage(const Command& command)
+void CommandsUI::DrawCommandImage(const Command& command, bool isHighlighted)
 {
     const CommandUIProps& props = GetCommandUIProps(command);
-    m_Render->ImGuiImage(props.Texture, props.Size, props.UV0, props.UV1);
+    ImVec2 UV0 = props.UV0;
+    ImVec2 UV1 = props.UV1;
+    if (isHighlighted)
+    {
+        UV0.y += 0.5;
+        UV1.y += 0.5;
+    }
+    m_Render->ImGuiImage(props.Texture, props.Size, UV0, UV1);
 }
 
 bool CommandsUI::DrawCommandImageButton(const Command& command)

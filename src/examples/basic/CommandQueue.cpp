@@ -47,6 +47,10 @@ void CommandQueue::Erase()
 void CommandQueue::Reset()
 {
     m_CommandIndx = 0;
+    for (Command& command : m_Commands)
+    {
+        command.Reset();
+    }
 
     m_CurrentState = State::Stop;
 }

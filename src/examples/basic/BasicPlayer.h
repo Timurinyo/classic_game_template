@@ -122,6 +122,7 @@ private:
     void InitDirectionsMap();
 
     GameTile::Type m_NextTileType = GameTile::Type::Undefined;
+
 };
 
 const char* PlayerStateToString(PlayerStateID state);
