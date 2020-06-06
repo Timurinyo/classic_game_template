@@ -9,7 +9,8 @@ add_executable(example_basic
     CommandQueue.cpp
     pch.h
     game_grid.cpp game_grid.h
-    )
+    tileset.cpp tileset.h
+    game_tile.cpp game_tile.h)
 
 target_link_libraries(example_basic
     engine

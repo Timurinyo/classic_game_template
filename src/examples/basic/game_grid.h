@@ -1,25 +1,11 @@
 #pragma once
 
-struct GameTile
-{
-    enum class Type
-    {
-        Undefined,
-        Start,
-        Goal,
-        Ground,
-        Water,
-    };
-
-    Type type = Type::Undefined;
-
-    static GameTile FromTMXTile(tmx_tile& tile);
-};
+#include <examples/basic/game_tile.h>
 
 class GameGrid
 {
 public:
-    GameGrid(tmx_map* map);
+    GameGrid(tmx_map* map, tmx_layer* layer);
 
     GameTile& At(u32 x, u32 y);
 
