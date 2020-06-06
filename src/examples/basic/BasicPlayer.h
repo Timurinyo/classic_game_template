@@ -51,7 +51,14 @@ public:
     {
         InitTextures(parentFolderPath, render);
         InitDirectionsMap();
+
+        wilhelm = cgt::LoadWav("assets/examples/sounds/wilhelm.wav");
     };
+
+    ~BasicPlayer()
+    {
+        Mix_FreeChunk(wilhelm);
+    }
 
     void Render(cgt::render::RenderQueue& queue);
 
@@ -124,6 +131,8 @@ private:
     void InitDirectionsMap();
 
     GameTile::Type m_NextTileType = GameTile::Type::Undefined;
+
+    Mix_Chunk* wilhelm;
 
 };
 

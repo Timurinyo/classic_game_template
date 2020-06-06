@@ -129,6 +129,7 @@ void BasicPlayer::MoveForward(float dt)
         case GameTile::Type::Water:
         {
             m_PlayerState = PlayerStateID::Dying;
+            Mix_PlayChannel(-1, wilhelm, 0);
             break;
         }
         default:

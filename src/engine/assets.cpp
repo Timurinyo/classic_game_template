@@ -86,4 +86,13 @@ Mix_Music* LoadMusic(const char* path)
     return music;
 }
 
+Mix_Chunk* LoadWav(const char* path)
+{
+    const std::string formattedPath = FormatPath(path);
+    Mix_Chunk* chunk = Mix_LoadWAV(formattedPath.c_str());
+    CGT_ASSERT_ALWAYS_MSG(chunk != nullptr, "Failed to load a WAV file at: {}\nSDL error: {}", formattedPath.c_str(), SDL_GetError());
+
+    return chunk;
+}
+
 }

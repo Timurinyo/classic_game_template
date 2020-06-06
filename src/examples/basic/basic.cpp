@@ -130,9 +130,8 @@ int GameMain()
     auto mixOpenResult = Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 2048);
     CGT_ASSERT_MSG(mixOpenResult >= 0, "Failed to initialize SDL mixer!");
 
-    Mix_Music* music = cgt::LoadMusic("assets/examples/sounds/music.wav");
-    CGT_ASSERT_MSG(music, "Failed to open the music track!");
-
+    auto* music = cgt::LoadMusic("assets/examples/sounds/music.wav");
+    Mix_VolumeMusic(80);
     Mix_PlayMusic(music, -1);
 
     cgt::render::RenderQueue renderQueue;
