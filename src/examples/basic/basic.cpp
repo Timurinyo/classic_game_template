@@ -147,7 +147,8 @@ int GameMain()
             "assets/examples/maps/level_01.tmx",
             "assets/examples/maps/level_02.tmx",
             "assets/examples/maps/level_03.tmx",
-            "assets/examples/maps/level_00.tmx",
+            "assets/examples/maps/level_04.tmx",
+            //"assets/examples/maps/level_00.tmx",
         };
     usize currentLevelIdx = 0;
 
@@ -217,7 +218,7 @@ int GameMain()
         }
 
         renderQueue.Reset();
-        renderQueue.clearColor = glm::vec4(1.0f, 0.3f, 1.0f, 1.0f);
+        renderQueue.clearColor = glm::vec4(0.529f, 0.88f, 0.92f, 1.0f);
 
         level.tileset->RenderGameGrid(*level.gameGrid, renderQueue);
         level.tileset->RenderGameGrid(*level.pickupGrid, renderQueue);
