@@ -249,9 +249,9 @@ void BasicPlayer::Execute(CommandID command, GameGrid& grid)
 
 GameTile::Type BasicPlayer::GetViewedTile(GameGrid& grid) const
 {
-    u32 x = m_CoordsPrev.x + m_DirectionsMap[m_DirectionPrev].x;
-    u32 y = -m_CoordsPrev.y - m_DirectionsMap[m_DirectionPrev].y;
-
+    u32 x = m_CoordsCurrent.x + m_DirectionsMap[m_DirectionCurrent].x;
+    u32 y = -m_CoordsCurrent.y - m_DirectionsMap[m_DirectionCurrent].y;
+    
     if (x >= 0 && x < grid.Width() && y >= 0 && y < grid.Height())
     {
         return grid.At(x, y).type;

@@ -145,8 +145,8 @@ int GameMain()
     const char* levelList[] =
         {
             "assets/examples/maps/level_01.tmx",
-            "assets/examples/maps/level_01.tmx",
             "assets/examples/maps/level_02.tmx",
+            "assets/examples/maps/level_03.tmx",
             "assets/examples/maps/level_00.tmx",
         };
     usize currentLevelIdx = 0;
