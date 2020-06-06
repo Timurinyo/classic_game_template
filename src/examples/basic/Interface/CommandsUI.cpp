@@ -38,11 +38,6 @@ void CommandsUI::Tick(const float dt)
     ImGui::Separator();
     DrawCommandSelectButtons();
 
-    if (ImGui::Button("Step"))
-    {
-        m_CommandQueue->StepForward();
-    }
-
     if (ImGui::Button("Start!"))
     {
         m_CommandQueue->SetState(State::Execution);
@@ -74,7 +69,7 @@ void CommandsUI::DrawCommandQueue()
         {
             shouldHighlight = true;
         }
-        else if (command.ID != CommandID::Repeat)
+        else if (command.ID != CommandID::Repeat && command.ID != CommandID::DoWhile)
         {
             shouldHighlight = false;
         }
@@ -98,8 +93,6 @@ void CommandsUI::DrawCommandQueue()
 
         ImGui::PopID();
     }
-
-    ImGui::Text("Current command idx: %d", m_CommandQueue->GetCurrentIdx());
 }
 
 void CommandsUI::DrawCommandSelectButtons()
@@ -161,7 +154,7 @@ CommandUIProps CommandsUI::GetCommandUIProps(const Command& command) const
     float uvDeltaX = props.UV1.x - props.UV0.x;
     if (!command.CurrentRepeats)
     {
-        return { props.Texture, {0.8, 0.0}, {1.0, 0.5}, props.Description, props.Size };
+        return { props.Texture, {0.4, 0.25}, {0.5, 0.50}, props.Description, props.Size };
     }
     ImVec2 UV0(uvDeltaX * (command.CurrentRepeats - 1), props.UV0.y);
     ImVec2 UV1(uvDeltaX *  command.CurrentRepeats     , props.UV1.y);

@@ -6,6 +6,8 @@
 #include <engine/external_libs.h>
 #include <engine/system.h>
 
+#include "game_tile.h"
+
 enum class State
 {
     Execution,
@@ -33,7 +35,9 @@ struct Command
     int InitialRepeats = 1;
     int CurrentRepeats = 1;
 
-    void Reset() { CurrentRepeats = InitialRepeats; }
+    GameTile::Type LastMemorizedTile = GameTile::Type::Undefined;
+
+    void Reset() { CurrentRepeats = InitialRepeats; LastMemorizedTile = GameTile::Type::Undefined; }
 };
 
 class CommandQueue
@@ -53,7 +57,7 @@ public:
 
     void Reset();
 
-    void StepForward();
+    void StepForward(GameTile::Type previousViewedTile, GameTile::Type currentViewedTile);
 
     State GetState() const { return m_CurrentState; };
     void SetState(State newState) { m_CurrentState = newState; };
