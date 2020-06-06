@@ -98,7 +98,7 @@ private:
 
     glm::vec4 m_ColorTint;
 
-    const DirectionID m_DirectionDefault = DirectionID::SW;
+    const DirectionID m_DirectionDefault = DirectionID::ES;
 
     DirectionID m_DirectionCurrent = DirectionID::SW;
     DirectionID m_DirectionPrev = DirectionID::S;
