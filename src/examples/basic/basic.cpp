@@ -141,11 +141,11 @@ int GameMain()
         }
         else if(commandQueue.GetState() == State::Finished && player.GetPlayerState() != PlayerStateID::ReachedGoal)
         {
-            commandQueue.Reset();
             player.SetPlayerState(PlayerStateID::Dying);
         }
-        else if (player.GetPlayerState() == PlayerStateID::Dead)
+        else if (player.GetPlayerState() == PlayerStateID::Dead || commandQueue.GetState() == State::NeedRestart)
         {
+            commandQueue.Reset();
             player.Spawn(gameGrid);
         }
 

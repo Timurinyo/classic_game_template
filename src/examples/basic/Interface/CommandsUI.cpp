@@ -48,7 +48,7 @@ void CommandsUI::Tick(const float dt)
 
     if (ImGui::Button("Stop"))
     {
-        m_CommandQueue->SetState(State::Stop);
+        m_CommandQueue->SetState(State::NeedRestart);
     }
 
     if(ImGui::Button("Pause"))
