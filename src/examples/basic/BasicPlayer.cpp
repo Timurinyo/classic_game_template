@@ -146,7 +146,7 @@ void BasicPlayer::Rotate(float dt)
     if(((m_DirectionNext - m_DirectionPrev) > DirectionID::Count/2))
     {
         int directionNextTemp = m_DirectionNext - DirectionID::Count;
-        newPlayerDirection = LerpFloat(m_DirectionPrev,directionNextTemp,m_RotateTimer / m_TimePerRotation);
+        newPlayerDirection = LerpFloat(m_DirectionPrev, directionNextTemp, m_RotateTimer / m_TimePerRotation);
         if(newPlayerDirection < 0)
         {
             newPlayerDirection += DirectionID::Count;
@@ -155,7 +155,7 @@ void BasicPlayer::Rotate(float dt)
     else if((m_DirectionNext - m_DirectionPrev) < -DirectionID::Count/2)
     {
         int directionPreviousTemp = m_DirectionPrev - DirectionID::Count;
-        newPlayerDirection = LerpFloat(directionPreviousTemp,m_DirectionNext,m_RotateTimer / m_TimePerRotation);
+        newPlayerDirection = LerpFloat(directionPreviousTemp, m_DirectionNext, m_RotateTimer / m_TimePerRotation);
         if(newPlayerDirection < 0)
         {
             newPlayerDirection += DirectionID::Count;
@@ -163,7 +163,7 @@ void BasicPlayer::Rotate(float dt)
     }
     else
     {
-        newPlayerDirection = LerpFloat(m_DirectionPrev,m_DirectionNext,m_RotateTimer / m_TimePerRotation);
+        newPlayerDirection = LerpFloat(m_DirectionPrev, m_DirectionNext, m_RotateTimer / m_TimePerRotation);
     }
 
     m_DirectionCurrent = static_cast<DirectionID>(std::floor(newPlayerDirection));
@@ -191,6 +191,9 @@ void BasicPlayer::Execute(CommandID command, GameGrid& grid)
 {   
     m_MoveTimer = 0;
     m_RotateTimer = 0;
+
+    grid.At(m_CoordsCurrent.x, -m_CoordsCurrent.y).discovered = true;
+    grid.At(m_CoordsCurrent.x + m_DirectionsMap[m_DirectionCurrent].x, -m_CoordsCurrent.y - m_DirectionsMap[m_DirectionCurrent].y).discovered = true;
 
     switch(command)
     {

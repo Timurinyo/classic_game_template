@@ -163,6 +163,7 @@ int GameMain()
         {
             commandQueue.Reset();
             player.Spawn(*gameGrid);
+            gameGrid->UndiscoverAllTiles();
         }
 
         player.Update(dt);
