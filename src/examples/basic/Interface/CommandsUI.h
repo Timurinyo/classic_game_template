@@ -26,7 +26,7 @@ struct CommandUIProps
 class CommandsUI
 {
 public:
-    CommandsUI(std::shared_ptr<cgt::render::IRenderContext> render, CommandQueue* queue);
+    CommandsUI(std::shared_ptr<cgt::render::IRenderContext> render, CommandQueue* queue, u32 windowWidth, u32 windowHeight);
     void Tick(const float dt);
 
 private:
@@ -44,4 +44,6 @@ private:
     std::shared_ptr<cgt::render::IRenderContext> m_Render = nullptr;
 
     std::unordered_map<CommandID, CommandUIProps> m_CommandUIPropsMap;
+
+    const ImVec2 m_WindowSize;
 };
