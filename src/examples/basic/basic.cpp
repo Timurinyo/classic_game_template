@@ -1,6 +1,7 @@
 #include <examples/basic/pch.h>
 
 #include <examples/basic/game_grid.h>
+#include <examples/basic/tileset.h>
 
 #include "CommandQueue.h"
 #include "Interface/CommandsUI.h"
@@ -49,13 +50,27 @@ int GameMain()
     camera.pixelsPerUnit = 87.0f;
 
     auto tiledMap = cgt::LoadTiledMap("assets/examples/maps/sample_iso.tmx");
-    cgt::Tilemap tiledMapRenderer(tiledMap, *render, "assets/examples/maps");
-    GameGrid gameGrid(tiledMap);
+    std::unique_ptr<GameGrid> gameGrid;
+    std::unique_ptr<GameGrid> pickupGrid;
+    for (tmx_layer* layer = tiledMap->ly_head; layer; layer = layer->next)
+    {
+        if (strcmp(layer->name, "BASE") == 0)
+        {
+            gameGrid = std::make_unique<GameGrid>(tiledMap, layer, false);
+        }
+        else if (strcmp(layer->name, "PICKUPS") == 0)
+        {
+            pickupGrid = std::make_unique<GameGrid>(tiledMap, layer, false);
+        }
+    }
+    CGT_ASSERT_ALWAYS(gameGrid.get() && pickupGrid.get());
+
+    auto tileset = Tileset::LoadFrom(*render, tiledMap, tiledMap->ts_head->tileset, "assets/examples/maps");
 
     bool shouldGo = false;
     BasicPlayer player("assets/examples/textures/player", *render);
 
-    player.Spawn(gameGrid);
+    player.Spawn(*gameGrid);
 
     CommandQueue commandQueue;
     CommandsUI commandsInterface(render, &commandQueue);
@@ -130,13 +145,14 @@ int GameMain()
         renderQueue.Reset();
         renderQueue.clearColor = glm::vec4(1.0f, 0.3f, 1.0f, 1.0f);
 
-        tiledMapRenderer.Render(renderQueue);
+        tileset->RenderGameGrid(*gameGrid, renderQueue);
+        tileset->RenderGameGrid(*pickupGrid, renderQueue);
 
         const Command currentCommand = commandQueue.GetCurrent();
 
         if (player.GetPlayerState() == PlayerStateID::Idle && commandQueue.GetState() == State::Execution)
         {
-            player.Execute(currentCommand.ID, gameGrid);
+            player.Execute(currentCommand.ID, *gameGrid);
             commandQueue.StepForward();
         }
         else if(commandQueue.GetState() == State::Finished && player.GetPlayerState() != PlayerStateID::ReachedGoal)
@@ -146,7 +162,7 @@ int GameMain()
         else if (player.GetPlayerState() == PlayerStateID::Dead || commandQueue.GetState() == State::NeedRestart)
         {
             commandQueue.Reset();
-            player.Spawn(gameGrid);
+            player.Spawn(*gameGrid);
         }
 
         player.Update(dt);
@@ -158,10 +174,11 @@ int GameMain()
 
         player.Render(renderQueue);
 
-        ImguiDebugRenderPlayerStats(player, gameGrid, commandQueue);
+        ImguiDebugRenderPlayerStats(player, *gameGrid, commandQueue);
 
         renderStats = render->Submit(renderQueue, camera);
     }
 
+    tmx_map_free(tiledMap);
     return 0;
 }
