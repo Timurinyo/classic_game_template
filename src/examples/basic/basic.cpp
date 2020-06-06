@@ -127,9 +127,9 @@ int GameMain()
     bool shouldLoadLevel = true;
     const char* levelList[] =
         {
-            "assets/examples/maps/level_00.tmx",
             "assets/examples/maps/level_01.tmx",
             "assets/examples/maps/level_02.tmx",
+            "assets/examples/maps/level_00.tmx",
         };
     usize currentLevelIdx = 0;
 

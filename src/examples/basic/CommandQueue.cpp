@@ -56,7 +56,6 @@ void CommandQueue::Reset()
     m_CurrentState = State::Stop;
 }
 
-
 void CommandQueue::StepForward(GameTile::Type previousViewedTile, GameTile::Type currentViewedTile)
 {
     ++m_CommandIndx;

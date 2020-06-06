@@ -19,10 +19,11 @@ CommandsUI::CommandsUI(std::shared_ptr<cgt::render::IRenderContext> render,
         { CommandID::Repeat, "x4", 4, 4 },
         { CommandID::Repeat, "x5", 5, 5 },
         { CommandID::DoWhile, "Do While" },
+        { CommandID::None, "Do Nothing" }
     };
 
     m_CommandUIPropsMap = {
-        { CommandID::None,        { movesTexture, {0.3, 0.00}, {0.4, 0.25}, nullptr } },
+        { CommandID::None,        { movesTexture, {0.3, 0.00}, {0.4, 0.25}, "Do nothing..." } },
         { CommandID::MoveForward, { movesTexture, {0.0, 0.00}, {0.1, 0.25}, "Move one cell forward" } },
         { CommandID::TurnLeft,    { movesTexture, {0.2, 0.00}, {0.3, 0.25}, "Turn counterclockwise 90 degrees" } },
         { CommandID::TurnRight,   { movesTexture, {0.1, 0.00}, {0.2, 0.25}, "Turn clockwise 90 degrees" } },
