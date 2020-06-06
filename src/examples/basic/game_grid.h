@@ -14,6 +14,8 @@ public:
 
     glm::vec2 GetStartTileCoords() const { return m_StartTileCoords; }
 
+    void UndiscoverAllTiles();
+
 private:
     u32 m_Width;
     u32 m_Height;

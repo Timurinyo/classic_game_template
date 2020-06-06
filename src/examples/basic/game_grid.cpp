@@ -38,3 +38,14 @@ GameTile& GameGrid::At(u32 x, u32 y)
 
     return m_Grid[y * m_Width + x];
 }
+
+void GameGrid::UndiscoverAllTiles()
+{
+    for(u32 y = 0; y < m_Height; ++y)
+    {
+        for(u32 x = 0; x < m_Width; ++x)
+        {
+            this->At(x,y).discovered = false;
+        }
+    }
+}
