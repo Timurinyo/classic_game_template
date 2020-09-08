@@ -3,10 +3,11 @@
 namespace cgt
 {
 
-const char* GetGameRoot();
-std::vector<u8> LoadFile(const char* path);
-tmx_map* LoadTiledMap(const char* path);
-Mix_Music* LoadMusic(const char* path);
-Mix_Chunk* LoadWav(const char* path);
+const std::filesystem::path& GetGameRoot();
+const std::filesystem::path& GetAssetsRoot();
+
+std::filesystem::path AssetPath(const std::filesystem::path& relativePath);
+
+std::vector<u8> LoadFileBytes(const std::filesystem::path& absolutePath);
 
 }
